@@ -1,0 +1,21 @@
+/* Default Blue Styling */
+.default-blue {
+  background-color: #007bff; /* Blue */
+  color: white;
+}
+
+/* Selected Green Styling */
+.selected-green {
+  background-color: #28a745; /* Green */
+  color: white;
+}
+
+/* Button Styling */
+.seat-class {
+  padding: 12px 25px;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 5px;
+  transition: background-color 0.3s ease-in-out;
+}

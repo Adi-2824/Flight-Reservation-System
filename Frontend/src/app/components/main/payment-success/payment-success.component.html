@@ -1,0 +1,8 @@
+<div class="confirmation-container">
+  <h2>Payment Successful!</h2>
+  <p>Your booking has been confirmed.</p>
+
+  <app-ticket [bookingInfo]="bookingInfo" [flightInfo] = "flightInfo"></app-ticket> <!-- ✅ Display ticket -->
+
+  <button (click)="printTicket()">Print Ticket</button>
+</div>

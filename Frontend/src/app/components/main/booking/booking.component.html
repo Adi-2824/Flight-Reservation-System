@@ -1,0 +1,191 @@
+<div class="container">
+  <!-- Portfolio Item Heading -->
+  <h3 class="my-4 purple">
+    Review
+    <small>Your booking</small>
+  </h3>
+
+  <!-- Portfolio Item Row -->
+  <div class="row">
+    <div class="col-md-12 box-content">
+      <div class="row">
+        <div class="col col-lg-3">
+          <!-- <strong><span>{{this.flightDetails.airlineName}}</span></strong> <br> -->
+          <strong
+            ><span
+              >FlightNumber : {{ this.flightDetails.flightNumber }}</span
+            ></strong
+          >
+        </div>
+        <div class="col col-lg-3">
+          <!-- <strong><span>{{this.tripDetails.from}}</span></strong><br> -->
+          <strong
+            ><span
+              >DepartureTime :
+              {{
+                this.flightDetails.departureDateTime | date : "yyyy-MM-dd"
+              }}</span
+            ></strong
+          ><br />
+          <!-- <strong><span>{{this.tripDetails.depature}}</span></strong> -->
+        </div>
+        <div class="col col-lg-3">
+          <!-- <strong><span>{{this.tripDetails.to}}</span></strong><br> -->
+          <strong
+            ><span
+              >ArrivalTime :
+              {{
+                this.flightDetails.arrivalDateTime | date : "yyyy-MM-dd"
+              }}</span
+            ></strong
+          ><br />
+          <!-- <strong><span>{{this.flightDetails.return}}</span></strong> -->
+        </div>
+        <div class="col col-lg-3">
+          <strong
+            ><span>Price : {{ this.flightDetails.economyPrice }}</span> </strong
+          ><br />
+          <strong><span>Meal Fare</span> </strong><br />
+          <strong><span>Economy</span></strong
+          ><br />
+          <strong><span>15kgs</span></strong>
+        </div>
+      </div>
+      <br />
+      <div class="alert alert-primary" role="alert">
+        Note: This is a special No Meal fare provided by the airline
+      </div>
+      <br /><br />
+    </div>
+  </div>
+  <!-- /.row -->
+
+  <!-- Related Projects Row -->
+  <h3 class="my-4 purple">Traveller Details</h3>
+  <div class="row">
+    <div class="col-md-8 box-content" style="max-height: 420px">
+      <div class="alert alert-info" role="alert">
+        Note: Your booking details will be sent to this email address and mobile
+        number.
+      </div>
+      <div class="container">
+        <div class="col-lg-8 well">
+          <div class="row">
+          <form [formGroup]="travellerForm">
+  <div class="row">
+    <div class="col-md-6">
+      <label for="firstName">First Name</label>
+      <input type="text" class="form-control" formControlName="firstName" />
+    </div>
+    <div class="col-md-6">
+      <label>Last Name</label>
+      <input type="text" class="form-control" formControlName="lastName" />
+    </div>
+    <div class="col-md-6">
+      <label>Age</label>
+      <input type="number" class="form-control" formControlName="age" />
+    </div>
+    <div class="col-md-6">
+      <label>Gender</label>
+      <select class="form-control" formControlName="gender">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <Label>Seat Class</Label>
+      <select class="form-control" formControlName="seatClass">
+        <option value="Economy">Economy</option>
+        <option value="Business">Business</option>
+      </select>
+    </div>
+  </div>
+  <br />
+  <button *ngIf="!isEditing" class="btn btn-warning" (click)="addTraveller()">Add</button>
+</form>
+            <div style="width: 420px">
+              <table class="table table-striped table-dark" id="travellerTbl">
+                <thead>
+                  <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>SeatClass</th>
+                    <th>Price</th>
+                    <!-- <th>Edit</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let values of this.travellerList; let i = index">
+                    <td>{{ values.firstName }}</td>
+                    <td>{{ values.lastName }}</td>
+                    <td>{{ getSeatClassLabel(values.seatClass) }}</td>
+                    <td>{{ values.price }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+           
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="col-12 col-sm-4">
+        <div class="card bg-light mb-3">
+          <div class="card-header bg-success text-white text-uppercase">Fare Details</div>
+          <div class="card-body">
+            <!-- <ul>
+              <li class="list" type="number"><span class="pull-left">Base Fare of {{this.travellerList.length}} Traveller</span><span
+                  class="pull-right"><i class="fa fa-rupee"></i>
+                  {{this.flightDetails.price }}</span></li>
+              <br>
+              <li class="list" type="number"><span class="pull-left">You Pay</span>
+                <span class="pull-right" *ngIf="this.travellerList.length == 0"> <i
+                    class="fa fa-rupee"></i>{{this.flightDetails.price }}</span>
+                <span class="pull-right" *ngIf="this.travellerList.length > 0"> <i
+                    class="fa fa-rupee"></i>{{this.flightDetails.
+economyClassPrice*this.travellerList.length
+ }}</span>
+              </li>
+            </ul> -->
+    <!-- <br><br>
+           
+            <br> <br>
+         
+            <button type="button" class="btn btn-danger" (click)="ProceedToBooking()">Proceed to
+              Booking</button>
+          </div>
+        </div>
+      </div> -->
+
+    <!-- Fare Details -->
+    <div class="col-12 col-sm-4">
+      <div class="card bg-light mb-3">
+        <div class="card-header bg-success text-white text-uppercase">
+          Fare Details
+        </div>
+        <div class="card-body">
+          <ul>
+            <li class="list">
+              <span class="pull-left"
+                >Base Fare of {{ travellerList.length }} Traveller(s)</span
+              >
+              <span class="pull-right"
+                ><i class="fa fa-rupee"></i> {{ calculateTotalFare() }}</span
+              >
+            </li>
+          </ul>
+          <br /><br />
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="ProceedToBooking()"
+          >
+            Proceed to Booking
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

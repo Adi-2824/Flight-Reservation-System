@@ -1,0 +1,114 @@
+<!-- <main class="container mt-4">
+  <form [formGroup]="addFlightForm" (ngSubmit)="onSubmit()" class="p-4 border rounded bg-light">
+    <div class="mb-3">
+      <label for="flightNumber" class="form-label">Flight Number</label>
+      <input type="text" class="form-control" id="flightNumber" formControlName="flightNumber" placeholder="Enter Flight Number">
+    </div>
+
+    <div class="mb-3">
+      <label for="airlineId" class="form-label">Airline ID</label>
+      <input type="number" class="form-control" id="airlineId" formControlName="airlineId">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureAirportId" class="form-label">Departure Airport ID</label>
+      <input type="number" class="form-control" id="departureAirportId" formControlName="departureAirportId">
+    </div>
+
+    <div class="mb-3">
+      <label for="arrivalAirportId" class="form-label">Arrival Airport ID</label>
+      <input type="number" class="form-control" id="arrivalAirportId" formControlName="arrivalAirportId">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureDate" class="form-label">Departure Date</label>
+      <input type="datetime-local" class="form-control" id="departureDate" formControlName="departureDate">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureTime" class="form-label">Departure Time (HH:mm:ss)</label>
+      <input type="text" class="form-control" id="departureTime" formControlName="departureTime" placeholder="HH:mm:ss">
+    </div>
+
+    <div class="mb-3">
+      <label for="arrivalTime" class="form-label">Arrival Time (HH:mm:ss)</label>
+      <input type="text" class="form-control" id="arrivalTime" formControlName="arrivalTime" placeholder="HH:mm:ss">
+    </div>
+
+    <div class="mb-3">
+      <label for="duration" class="form-label">Duration (HH:mm:ss)</label>
+      <input type="text" class="form-control" id="duration" formControlName="duration" placeholder="HH:mm:ss">
+    </div>
+
+    <div class="mb-3">
+      <label for="status" class="form-label">Flight Status</label>
+      <select class="form-select" id="status" formControlName="status">
+        <option value="On Time">On Time</option>
+        <option value="Delay">Delay</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Add Flight</button>
+  </form>
+</main> -->
+
+<main class="container mt-4">
+  <form [formGroup]="addFlightForm" (ngSubmit)="onSubmit()" class="p-4 border rounded bg-light">
+    
+    <div class="mb-3">
+      <label for="flightNumber" class="form-label">Flight Number</label>
+      <input type="text" class="form-control" id="flightNumber" formControlName="flightNumber" placeholder="Enter Flight Number">
+    </div>
+
+    <div class="mb-3">
+      <label for="airlineName" class="form-label">Airline Name</label>
+      <input type="text" class="form-control" id="airlineName" formControlName="airlineName" placeholder="Enter Airline Name">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureCity" class="form-label">Departure City</label>
+      <input type="text" class="form-control" id="departureCity" formControlName="departureCity" placeholder="Enter Departure City">
+    </div>
+
+    <div class="mb-3">
+      <label for="arrivalCity" class="form-label">Arrival City</label>
+      <input type="text" class="form-control" id="arrivalCity" formControlName="arrivalCity" placeholder="Enter Arrival City">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureTime" class="form-label">Departure Time</label>
+      <input type="datetime-local" class="form-control" id="departureTime" formControlName="departureTime">
+    </div>
+
+    <div class="mb-3">
+      <label for="arrivalTime" class="form-label">Arrival Time</label>
+      <input type="datetime-local" class="form-control" id="arrivalTime" formControlName="arrivalTime">
+    </div>
+
+    <div class="mb-3">
+      <label for="totalBusinessSeats" class="form-label">Total Business Seats</label>
+      <input type="number" class="form-control" id="totalBusinessSeats" formControlName="totalBusinessSeats">
+    </div>
+
+    <div class="mb-3">
+      <label for="totalEconomySeats" class="form-label">Total Economy Seats</label>
+      <input type="number" class="form-control" id="totalEconomySeats" formControlName="totalEconomySeats">
+    </div>
+
+    <div class="mb-3">
+      <label for="businessClassPrice" class="form-label">Business Class Price</label>
+      <input type="number" class="form-control" id="businessClassPrice" formControlName="businessClassPrice">
+    </div>
+
+    <div class="mb-3">
+      <label for="economyClassPrice" class="form-label">Economy Class Price</label>
+      <input type="number" class="form-control" id="economyClassPrice" formControlName="economyClassPrice">
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">Add Flight</button>
+
+  </form>
+</main>
+
+
+

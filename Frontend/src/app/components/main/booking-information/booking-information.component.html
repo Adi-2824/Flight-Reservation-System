@@ -1,0 +1,76 @@
+<div class="booking-info-container">
+  <h2>Booking Details</h2>
+
+  <div *ngIf="!bookingData" class="loading-message">
+    <p>Loading booking details...</p>
+  </div>
+
+  <div *ngIf="bookingData">
+    <table class="booking-details-table">
+      <tr>
+        <td><strong>Booking Reference:</strong></td>
+        <td>{{ bookingData.bookingReference }}</td>
+      </tr>
+      <tr>
+        <td><strong>Flight Number:</strong></td>
+        <td>{{ bookingData.flight.flightNumber }}</td>
+      </tr>
+      <tr>
+        <td><strong>Source:</strong></td>
+        <td>{{ bookingData.flight.origin }}</td>
+      </tr>
+      <tr>
+        <td><strong>Destination:</strong></td>
+        <td>{{ bookingData.flight.destination }}</td>
+      </tr>
+      <tr>
+        <td><strong>Departure:</strong></td>
+        <td>{{ bookingData.flight.departureDateTime | date:'dd MMM yyyy, hh:mm a' }}</td>
+      </tr>
+      <tr>
+        <td><strong>Arrival:</strong></td>
+        <td>{{ bookingData.flight.arrivalDateTime | date:'dd MMM yyyy, hh:mm a' }}</td>
+      </tr>
+      <tr  *ngIf="bookingData?.status !== undefined">
+         <td><strong>Booking Status:</strong></td>
+        <td> {{ bookingData.status === 0 ? 'Pending' :
+       bookingData.status === 1 ? 'Confirmed' :
+       bookingData.status === 2 ? 'Cancelled' :
+       bookingData.status === 3 ? 'Refunded' : 'Unknown' }}</td>
+  
+      </tr>
+      <tr>
+        <td><strong>Payment Method:</strong></td>
+        <td>{{ bookingData.payment.paymentMethod}} ({{bookingData.payment.status}})</td>
+      </tr>
+      <tr>
+        <td><strong>Passengers:</strong></td>
+        <td>
+          <ul *ngIf="bookingData.passengers?.length > 0">
+            <li *ngFor="let passenger of bookingData.passengers">
+              {{ passenger.firstName }} {{ passenger.lastName }} - {{ passenger.seatClass }}
+            </li>
+          </ul>
+          <p *ngIf="bookingData.passengers?.length === 0">No passengers found.</p>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <tr *ngIf="bookingData.status === 0 && bookingData?.expiresAt">
+  <td><strong>Expires In:</strong></td>
+  <td>{{ getExpirationCountdown(bookingData.expiresAt) }}</td>
+</tr>
+
+
+<button *ngIf="bookingData?.canCancel" class="btn btn-danger" (click)="cancelReservation()">
+  Cancel Reservation
+</button>
+
+
+  <!-- Show "Proceed to Payment" only for Pending bookings -->
+    <button *ngIf="bookingData.status === 0" class="btn btn-warning" (click)="proceedToPayment()">
+      Proceed to Payment
+    </button> 
+
+  <button class="btn btn-secondary" (click)="goBack()">Back to Booking History</button>
+</div>

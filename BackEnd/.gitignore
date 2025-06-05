@@ -1,0 +1,54 @@
+# Ignore Visual Studio specific files
+.vs/
+*.user
+*.suo
+*.psess
+*.vsp
+
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files
+*.swp
+*.swo
+
+# Ignore compiled files and packages
+*.dll
+*.exe
+*.pdb
+*.cache
+*.so
+*.lib
+*.nupkg
+*.tar.gz
+*.zip
+
+# Ignore logs and temporary files
+logs/
+*.log
+tmp/
+
+# Ignore environment-specific configuration files
+appsettings.Development.json
+secrets.json
+
+# Ignore generated files from tools like Rider and JetBrains
+.idea/
+*.ipr
+*.iws
+
+# Ignore Node.js dependencies (if using frontend libraries)
+node_modules/
+bower_components/
+
+# Ignore coverage reports
+coverage/
+*.lcov
+
+# Ignore Docker and Kubernetes related files
+docker-compose.override.yml
+
+# Ignore Terraform files
+terraform.tfstate
+terraform.tfstate.backup

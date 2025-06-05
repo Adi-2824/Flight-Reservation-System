@@ -1,0 +1,132 @@
+ <header class="section__container header__container">
+    <h1 class="section__header">Find And Book<br />A Great Experience</h1>
+    <img src="../../../assets/images/header.jpg" alt="header" />
+  </header>
+<div class="container mt-4">
+    <!-- Navbar -->
+    <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Admin Dashboard</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" routerLink="/dashboard">Manage Airlines</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard/schedule">Manage Schedules</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/dashboard/coupon">Manage Coupons</a>
+            </li>
+          </ul>
+          <button class="btn btn-outline-light" (click)="logout()">Logout</button>
+        </div>
+      </div>
+    </nav>
+   -->
+    <!-- Cards for Quick Actions -->
+    <div class="row mt-4">
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">Manage Airlines</h5>
+            <p class="card-text">View, add, or update airline details.</p>
+            <a routerLink="/dashboard" class="btn btn-primary">Go to Airlines</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">Manage Schedules</h5>
+            <p class="card-text">Create and update flight schedules.</p>
+            <a routerLink="dashboard/schedule" class="btn btn-primary">Go to Schedules</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-body">
+            <h5 class="card-title">Manage Coupons</h5>
+            <p class="card-text">Set up promotional offers for airlines.</p>
+            <a routerLink="/dashboard/coupon" class="btn btn-primary">Go to Coupons</a>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Airline Form -->
+    <div class="mt-5 container">
+      <h3 class="text-center">Airline Management</h3>
+      <form >
+        <div class="row g-3 justify-content-center">
+          <input type="hidden" id="id" formControlName="id">
+ 
+          <div class="col-md-3">
+            <label for="airlineName" class="form-label">Airline Name</label>
+            <input type="text" class="form-control" id="airlineName" formControlName="airlineName">
+            <div *ngIf="airlineForm.controls['airlineName'].invalid && airlineForm.controls['airlineName'].touched" class="text-danger">
+              Airline Name is required.
+            </div>
+          </div>
+ 
+          <div class="col-md-2">
+            <label for="airlineCode" class="form-label">Airline Code</label>
+            <input type="text" class="form-control" id="airlineCode" formControlName="airlineCode">
+            <div *ngIf="airlineForm.controls['airlineCode'].invalid && airlineForm.controls['airlineCode'].touched" class="text-danger">
+              Airline Code should be 2 characters.
+            </div>
+          </div>
+ 
+          <div class="col-md-3">
+            <label for="contactNumber" class="form-label">Contact Number</label>
+            <input type="text" class="form-control" id="contactNumber" formControlName="contactNumber">
+            <div *ngIf="airlineForm.controls['contactNumber'].invalid && airlineForm.controls['contactNumber'].touched" class="text-danger">
+              Invalid contact number.
+            </div>
+          </div>
+ 
+          <div class="col-md-2" *ngIf="showAddBtn">
+            <button type="button" class="btn btn-success mt-4"><a routerLink="addFlight" class="text-white">Add Airline</a></button>
+          </div>
+          <div class="col-md-2" *ngIf="!showAddBtn">
+            <!-- <button type="button" class="btn btn-primary mt-4" ><a routerLink="editFlight">Update Airline</a></button> -->
+            <!-- <button type="button" class="btn btn-info mt-4 ms-2" >Reset</button> -->
+          </div>
+        </div>
+      </form>
+    </div>
+ 
+    <!-- Airline List -->
+    <!-- <div class="mt-5 container">
+      <h3 class="text-center">Airline List</h3>
+      <div class="table-responsive shadow-sm">
+        <table class="table table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>Airline Name</th>
+              <th>Airline Code</th>
+              <th>Contact Number</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+             <tr *ngFor="let value of airlineList">
+              <td>{{value.airlineName}}</td>
+              <td>{{value.airlineCode}}</td>
+              <td>{{value.contactNumber}}</td>
+              <td>
+                <button class="btn btn-warning btn-sm me-2">Edit</button>
+                <button class="btn btn-danger btn-sm" >Delete</button>
+              </td>
+            </tr> -->
+          <!-- </tbody> -->
+        <!-- </table> -->
+      <!-- </div> --> 
+    <!-- </div> -->
+ 
+  </div>
+ 

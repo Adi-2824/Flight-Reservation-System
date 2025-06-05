@@ -1,0 +1,15 @@
+.ticket-container {
+  width: 50%;
+  margin: auto;
+  padding: 20px;
+  border: 2px solid black;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Hide unnecessary elements when printing */
+@media print {
+  button {
+    display: none; /* ✅ Hide print button */
+  }
+}

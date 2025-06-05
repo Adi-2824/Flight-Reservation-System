@@ -1,0 +1,55 @@
+<!-- <div class="ticket-container">
+  <h2>Flight Ticket</h2>
+
+  <p><strong>Passenger Name:</strong> {{ bookingInfo.passengers[0]?.passengerName }}</p> -->
+  <!-- <p><strong>Flight Number:</strong> {{ flightInfo?.flightNumber }}</p>
+  <p><strong>Airline:</strong> {{ flightInfo?.airline }}</p>
+  <p><strong>Departure:</strong> {{ flightInfo?.departureDateTime}}</p>
+  <p><strong>Arrival:</strong> {{ flightInfo?.arrivalDateTime}}</p>
+  <p><strong>Seat Class:</strong> {{ getSeatClassLabel(bookingInfo?.seatClass) }}</p>
+  <p><strong>Price:</strong> ₹{{ bookingInfo?.totalAmount }}</p> -->
+
+  <!-- <button (click)="printTicket()">Print Ticket</button>
+</div> --> 
+
+<!-- 
+<div id="ticketContainer" class="ticket-container">
+  <h2>Flight Ticket</h2>
+
+  <p><strong>Flight Number:</strong> {{ flightInfo?.flightNumber }}</p>
+  <p><strong>Airline:</strong> {{ flightInfo?.airline }}</p>
+  <p><strong>Departure:</strong> {{ flightInfo?.departureDateTime | date:'dd MMM yyyy, hh:mm a' }}</p>
+  <p><strong>Arrival:</strong> {{ flightInfo?.arrivalDateTime | date:'dd MMM yyyy, hh:mm a' }}</p>
+  <p><strong>Seat Class:</strong> {{ getSeatClassLabel(bookingInfo?.seatClass) }}</p>
+  <p><strong>Price:</strong> ₹{{ bookingInfo?.totalAmount }}</p>
+
+  <button (click)="generatePDF()">Download Ticket as PDF</button>
+</div> -->
+
+<div id="ticketContainer" class="ticket-container">
+  <h2>Flight Ticket</h2>
+
+  <p><strong>Booking Reference:</strong> {{ bookingInfo?.bookingReference }}</p>
+  <p><strong>Booking Date:</strong> {{ bookingInfo?.bookingDate | date:'dd MMM yyyy, hh:mm a' }}</p>
+
+  <p><strong>Flight Number:</strong> {{ flightInfo?.flightNumber }}</p>
+  <p><strong>Airline:</strong> {{ flightInfo?.airline }}</p>
+  <p><strong>Departure:</strong> {{ flightInfo?.departureDateTime | date:'dd MMM yyyy, hh:mm a' }}</p>
+  <p><strong>Arrival:</strong> {{ flightInfo?.arrivalDateTime | date:'dd MMM yyyy, hh:mm a' }}</p>
+  <p><strong>Origin:</strong> {{ flightInfo?.origin }}</p>
+  <p><strong>Destination:</strong> {{ flightInfo?.destination }}</p>
+
+  <h3>Passengers</h3>
+  <div *ngFor="let passenger of bookingInfo?.passengers">
+    <p><strong>Name:</strong> {{ passenger.firstName }} {{passenger.lastName}}</p>
+    <p><strong>Age:</strong> {{ passenger.age }}</p>
+    <p><strong>Class:</strong> {{ getSeatClassLabel(passenger.seatClass) }}</p>
+  </div>
+
+  <h3>Payment Details</h3>
+  <p><strong>Payment Method:</strong> {{ bookingInfo?.payment.paymentMethod === 1 ? 'Credit Card' : 'Debit Card' }}</p>
+  <p><strong>Total Amount:</strong> ₹{{ bookingInfo?.totalAmount }}</p>
+  <p><strong>Payment Date:</strong> {{ bookingInfo?.payment.paymentDate | date:'dd MMM yyyy, hh:mm a' }}</p>
+
+  <button (click)="generatePDF()">Download Ticket as PDF</button>
+</div>

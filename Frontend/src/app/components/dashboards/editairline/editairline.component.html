@@ -1,0 +1,94 @@
+
+<main class="container mt-4">
+    <form [formGroup]="editFlightForm" (ngSubmit)="onSubmit()" class="p-4 border rounded bg-light">
+      <h3>Edit Flight</h3>
+
+      <div class="mb-3">
+        <label for="flightId" class="form-label">Flight Id</label>
+        <input type="number" class="form-control" id="flightId" formControlName="id">
+      </div>
+
+      <div class="mb-3">
+        <label for="flightNumber" class="form-label">Flight Number</label>
+        <input type="text" class="form-control" id="flightNumber" formControlName="flightNumber">
+      </div>
+      
+      <div class="mb-3">
+        <label for="airlineId" class="form-label">Airline Id</label>
+        <input type="text" class="form-control" id="airlineId" formControlName="airlineName">
+      </div>
+
+      <div class="mb-3">
+        <label for="departureAirport" class="form-label">Departure Airport</label>
+        <input type="text" class="form-control" id="departureAirport" formControlName="departureCity">
+      </div>
+  
+      <div class="mb-3">
+        <label for="arrivalAirport" class="form-label">Arrival Airport</label>
+        <input type="text" class="form-control" id="arrivalAirport" formControlName="arrivalCity">
+      </div>
+
+      <!-- <div class="mb-3">
+        <label for="departureDate" class="form-label">Departure Date</label>
+        <input type="datetime-local" class="form-control" id="departureDate" formControlName="departureDate">
+      </div> -->
+      <div class="mb-3">
+        <label for="departureTime" class="form-label">Departure Time</label>
+        <input type="text" class="form-control" id="departureTime" formControlName="departureTime">
+      </div>
+    
+  
+      <div class="mb-3">
+        <label for="arrivalTime" class="form-label">Arrival Time</label>
+        <input type="text" class="form-control" id="arrivalTime" formControlName="arrivalTime">
+      </div>
+      
+      <!-- <div class="mb-3">
+        <label for="Duration" class="form-label">Duration</label>
+        <input type="text" class="form-control" id="Duration" formControlName="duration">
+      </div> -->
+
+      <!-- <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <input type="text" class="form-control" id="status" formControlName="status">
+      </div> -->
+
+
+      <button type="submit" class="btn btn-success w-100">Update Flight</button>
+    </form>
+  </main>
+<!-- 
+  <main class="container mt-4">
+  <form [formGroup]="editFlightForm" (ngSubmit)="onSubmit()" class="p-4 border rounded bg-light">
+    <h3>Edit Flight</h3>
+
+    <div class="mb-3">
+      <label for="flightNumber" class="form-label">Flight Number</label>
+      <input type="text" class="form-control" id="flightNumber" formControlName="flightNumber">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureAirport" class="form-label">Departure Airport</label>
+      <input type="text" class="form-control" id="departureAirport" formControlName="departureAirport"
+             [value]="editFlightForm.value.departureAirport ? editFlightForm.value.departureAirport : ''">
+    </div>
+
+    <div class="mb-3">
+      <label for="arrivalAirport" class="form-label">Arrival Airport</label>
+      <input type="text" class="form-control" id="arrivalAirport" formControlName="arrivalAirport"
+             [value]="editFlightForm.value.arrivalAirport ? editFlightForm.value.arrivalAirport : ''">
+    </div>
+
+    <div class="mb-3">
+      <label for="departureTime" class="form-label">Departure Time</label>
+      <input type="text" class="form-control" id="departureTime" formControlName="departureTime">
+    </div>
+
+    <div class="mb-3">
+      <label for="arrivalTime" class="form-label">Arrival Time</label>
+      <input type="text" class="form-control" id="arrivalTime" formControlName="arrivalTime">
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Update Flight</button>
+  </form>
+</main> -->

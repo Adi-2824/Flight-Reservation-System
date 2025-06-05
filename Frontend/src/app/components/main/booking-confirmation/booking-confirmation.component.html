@@ -1,0 +1,65 @@
+<div class="confirmation-container">
+  <h2>Booking Confirmation</h2>
+  
+    <!-- Booking ID -->
+  <div class="booking-info">
+    <h3>Booking Information</h3>
+    <p><strong>Booking ID :</strong> {{ bookingId }}</p>
+  </div>
+
+  <div class="ticket-details">
+    <h3>Flight Details</h3>
+    <p><strong>Flight Number:</strong> {{ flightDetails?.flightNumber }}</p>
+    <p><strong>Airline:</strong> {{ flightDetails?.airline}}</p>
+    <p><strong>Departure:</strong> {{ flightDetails?.departureDateTime  | date:'dd MMM yyyy, hh:mm a'  }}</p>
+    <p><strong>Arrival:</strong> {{ flightDetails?.arrivalDateTime  | date:'dd MMM yyyy, hh:mm a'  }}</p>
+  </div>
+
+  <div class="traveller-details">
+    <h3>Passenger Information</h3>
+    <ul >
+    <li *ngFor="let traveller of travellerList; let i = index">
+  <p><strong>Name:</strong> {{ traveller.firstName }} {{ traveller.lastName }}</p>
+  <p><strong>Seat Class:</strong> {{ getSeatClassLabel(traveller.seatClass) }}</p> <!-- ✅ Correct mapping -->
+ <!-- <button class="btn btn-warning" (click)="editPassenger(traveller,i)">Edit</button> -->
+    </li>
+
+
+    </ul>
+  </div>
+
+  <div *ngIf="isEditing" class="edit-passenger">
+  <h3>Edit Passenger</h3>
+  <form [formGroup]="travellerForm">
+    <label>First Name</label>
+    <input type="text" formControlName="firstName" class="form-control">
+
+    <label>Last Name</label>
+    <input type="text" formControlName="lastName" class="form-control">
+
+    <label>Age</label>
+    <input type="number" formControlName="age" class="form-control">
+
+    <label>Gender</label>
+     <select formControlName="gender">
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+
+    <label>Seat Class</label>
+    <select formControlName="seatClass">
+      <option value="Economy">Economy</option>
+      <option value="Business">Business</option>
+    </select>
+ <button class="btn btn-success" (click)="updatePassenger()">Update Passenger</button>
+  </form>
+</div>
+
+
+ <div class="payment-section">
+    <h3>Payment Details</h3>
+    <p><strong>Total Amount:</strong> ₹{{totalAmount }}</p> <!-- ✅ Correct total amount -->
+    <button (click)="proceedToPayment()">Proceed to Payment</button>
+  </div>
+
+</div>
