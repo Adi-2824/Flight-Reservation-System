@@ -1,106 +1,198 @@
-
-<!-- <div class="history-container">
-  <h2>Booking History</h2>
-    Buttons to filter upcoming & past journeys -->
- 
-
-<!-- 
-  <div *ngIf="bookingList.length === 0" class="no-bookings">
-    <p>No bookings found.</p>
+<div class="booking-history-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">My Journeys</h1>
+      <p class="hero-subtitle">Track and manage all your flight reservations</p>
+    </div>
+    <div class="hero-decoration">
+      <div class="floating-plane">✈️</div>
+      <div class="cloud cloud-1">☁️</div>
+      <div class="cloud cloud-2">☁️</div>
+    </div>
   </div>
 
-  <table *ngIf="bookingList.length > 0" class="booking-table">
-    <thead>
-      <tr>
-        <th>Booking Reference</th>
-        <th>Booking Date</th>
-        <th>Flight Number</th>
-        <th>Source</th>
-        <th>Destination</th>
-        <th>Departure</th>
-        <th>Arrival</th>
-        <th>Status</th>
-        <th>Passengers</th>
-        <th>More Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let booking of bookingList">
-        <td>{{ booking.bookingReference }}</td>
-        <td>{{ booking.bookingDate}}</td>
-        <td>{{ booking.flight.flightNumber }}</td>
-        <td>{{ booking.flight.origin }}</td>
-        <td>{{ booking.flight.destination }}</td>
-        <td>
-          {{ booking.flight.departureDateTime}}
-        </td>
-        <td>
-          {{ booking.flight.arrivalDateTime}}
-        </td>
-        <td>{{ booking.status === 1 ? 'Confirmed' : 'Pending' }}</td>
-        <td>
-          <ul>
-            <li>
-              {{booking.passengers.length}}
-            </li>
-          </ul>
-        </td>
-        <td> <button class="btn btn-primary" (click) = moreDetails()>More</button></td>
-      </tr>
-    </tbody>
-  </table>
-</div> --> 
-
-
-<div class="history-container">
-  <h2 class="text-center">Booking History</h2>
-
-  <!-- Filter Buttons -->
-  <div class="filter-buttons container mb-5">
-    <button class="btn btn-primary mx-2" (click)="filterBookings('all')">All Reservations</button>
-    <button class="btn btn-secondary mx-2" (click)="filterBookings('upcoming')">Upcoming Journeys</button>
-    <button class="btn btn-success mx-2" (click)="filterBookings('past')">Past Journeys</button>
+  <!-- Filter Section -->
+  <div class="filter-section">
+    <div class="filter-container">
+      <div class="filter-header">
+        <h3>Filter Bookings</h3>
+        <span class="booking-count">{{ filteredBookingList.length }} {{ filteredBookingList.length === 1 ? 'booking' : 'bookings' }}</span>
+      </div>
+      <div class="filter-buttons">
+        <button 
+          class="filter-btn" 
+          [class.active]="currentFilter === 'all'"
+          (click)="setFilter('all')"
+          data-filter="all">
+          <span class="filter-icon">📋</span>
+          <span class="filter-text">All Reservations</span>
+          <span class="filter-badge">{{ bookingList.length }}</span>
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="currentFilter === 'upcoming'"
+          (click)="setFilter('upcoming')"
+          data-filter="upcoming">
+          <span class="filter-icon">🚀</span>
+          <span class="filter-text">Upcoming</span>
+          <span class="filter-badge">{{ getUpcomingCount() }}</span>
+        </button>
+        <button 
+          class="filter-btn" 
+          [class.active]="currentFilter === 'past'"
+          (click)="setFilter('past')"
+          data-filter="past">
+          <span class="filter-icon">📅</span>
+          <span class="filter-text">Past Journeys</span>
+          <span class="filter-badge">{{ getPastCount() }}</span>
+        </button>
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="filteredBookingList.length === 0" class="no-bookings">
-    <p>No bookings found.</p>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <div class="spinner-plane">✈️</div>
+      <div class="loading-text">Loading your journeys...</div>
+    </div>
   </div>
 
-  <table *ngIf="filteredBookingList.length > 0" class="booking-table">
-    <thead>
-      <tr>
-        <th>Booking Reference</th>
-        <th>Booking Date</th>
-        <th>Flight Number</th>
-        <th>Source</th>
-        <th>Destination</th>
-        <th>Departure</th>
-        <th>Arrival</th>
-        <th>Status</th>
-        <th>Passengers</th>
-        <th>More Details</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let booking of filteredBookingList">
-        <td>{{ booking.bookingReference }}</td>
-        <td>{{ booking.bookingDate | date:'dd MMM yyyy' }}</td>
-        <td>{{ booking.flight.flightNumber }}</td>
-        <td>{{ booking.flight.origin }}</td>
-        <td>{{ booking.flight.destination }}</td>
-        <td>{{ booking.flight.departureDateTime | date:'dd MMM yyyy, hh:mm a' }}</td>
-        <td>{{ booking.flight.arrivalDateTime | date:'dd MMM yyyy, hh:mm a' }}</td>
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filteredBookingList.length === 0" class="empty-state">
+    <div class="empty-illustration">
+      <div class="empty-plane">✈️</div>
+      <div class="empty-clouds">
+        <span class="empty-cloud">☁️</span>
+        <span class="empty-cloud">☁️</span>
+      </div>
+    </div>
+    <h3 class="empty-title">No bookings found</h3>
+    <p class="empty-subtitle">
+      {{ currentFilter === 'upcoming' ? 'No upcoming journeys planned' : 
+         currentFilter === 'past' ? 'No past journeys found' : 
+         'Start planning your next adventure!' }}
+    </p>
+    <button class="empty-cta" (click)="navigateToBooking()">
+      <span>Book Your Flight</span>
+      <span class="cta-arrow">→</span>
+    </button>
+  </div>
+
+  <!-- Bookings Grid -->
+  <div *ngIf="!isLoading && filteredBookingList.length > 0" class="bookings-grid">
+    <div 
+      *ngFor="let booking of filteredBookingList; let i = index; trackBy: trackByBookingId" 
+      class="booking-card"
+      [style.animation-delay]="i * 100 + 'ms'"
+      (click)="moreDetails(booking.id)">
+      
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="booking-reference">
+          <span class="ref-label">Booking Ref</span>
+          <span class="ref-number">{{ booking.bookingReference }}</span>
+        </div>
+        <div class="booking-status" [attr.data-status]="getStatusText(booking.status)">
+          <span class="status-dot"></span>
+          <span class="status-text">{{ getStatusText(booking.status) }}</span>
+        </div>
+      </div>
+
+      <!-- Flight Route -->
+      <div class="flight-route">
+        <div class="route-info">
+          <div class="airport origin">
+            <div class="airport-code">{{ getAirportCode(booking.flight.origin) }}</div>
+            <div class="airport-name">{{ booking.flight.origin }}</div>
+            <div class="flight-time">{{ booking.flight.departureDateTime | date:'HH:mm' }}</div>
+          </div>
+          
+          <div class="route-line">
+            <div class="flight-path">
+              <div class="path-line"></div>
+              <div class="flight-plane">✈️</div>
+            </div>
+            <div class="flight-number">{{ booking.flight.flightNumber }}</div>
+            <div class="flight-duration">{{ calculateDuration(booking.flight.departureDateTime, booking.flight.arrivalDateTime) }}</div>
+          </div>
+          
+          <div class="airport destination">
+            <div class="airport-code">{{ getAirportCode(booking.flight.destination) }}</div>
+            <div class="airport-name">{{ booking.flight.destination }}</div>
+            <div class="flight-time">{{ booking.flight.arrivalDateTime | date:'HH:mm' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Flight Details -->
+      <div class="flight-details">
+        <div class="detail-item">
+          <span class="detail-icon">📅</span>
+          <div class="detail-content">
+            <span class="detail-label">Departure Date</span>
+            <span class="detail-value">{{ booking.flight.departureDateTime | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
         
-        <td>{{ booking.status === 0 ? 'Pending' :
-       booking.status === 1 ? 'Confirmed' :
-       booking.status === 2 ? 'Cancelled' :
-       booking.status === 3 ? 'Refunded' : 'Unknown' }}</td>
-        <td>
-          <p *ngIf="booking.passengers?.length !== 0">{{booking.passengers.length}}</p>
-          <p *ngIf="booking.passengers?.length === 0">No passengers found.</p>
-        </td>
-        <td><button class="btn btn-primary" (click)="moreDetails(booking.id)">More</button></td>
-      </tr>
-    </tbody>
-  </table>
+        <div class="detail-item">
+          <span class="detail-icon">👥</span>
+          <div class="detail-content">
+            <span class="detail-label">Passengers</span>
+            <span class="detail-value">
+              {{ booking.passengers?.length || 0 }} 
+              {{ (booking.passengers?.length || 0) === 1 ? 'passenger' : 'passengers' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="detail-item">
+          <span class="detail-icon">💳</span>
+          <div class="detail-content">
+            <span class="detail-label">Booked On</span>
+            <span class="detail-value">{{ booking.bookingDate | date:'dd MMM yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <div class="journey-type">
+          <span class="journey-badge" [class]="getJourneyClass(booking.flight.departureDateTime)">
+            {{ getJourneyType(booking.flight.departureDateTime) }}
+          </span>
+        </div>
+        <button class="details-btn" (click)="moreDetails(booking.id); $event.stopPropagation()">
+          <span>View Details</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- Hover Effect Overlay -->
+      <div class="card-overlay"></div>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div *ngIf="!isLoading && bookingList.length > 0" class="quick-stats">
+    <div class="stats-container">
+      <div class="stat-item">
+        <div class="stat-number">{{ bookingList.length }}</div>
+        <div class="stat-label">Total Bookings</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ getUpcomingCount() }}</div>
+        <div class="stat-label">Upcoming</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ getPastCount() }}</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ getUniqueDestinations() }}</div>
+        <div class="stat-label">Destinations</div>
+      </div>
+    </div>
+  </div>
 </div>

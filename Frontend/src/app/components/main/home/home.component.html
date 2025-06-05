@@ -1,278 +1,397 @@
-  <header class="section__container header__container">
-    <h1 class="section__header">Find And Book<br />A Great Experience</h1>
-    <img src="../../../assets/images/header.jpg" alt="header" />
+<div class="home-container">
+  <!-- Enhanced Hero Section -->
+  <header class="hero-section">
+    <div class="hero-background">
+      <div class="animated-clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+        <div class="cloud cloud-4"></div>
+      </div>
+      <div class="flying-planes">
+        <div class="plane plane-1">✈️</div>
+        <div class="plane plane-2">🛩️</div>
+      </div>
+      <div class="floating-particles">
+        <div class="particle" *ngFor="let particle of particles; let i = index" 
+             [style.left.%]="particle.x" 
+             [style.animation-delay.s]="particle.delay">
+        </div>
+      </div>
+    </div>
+    
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          <span class="title-line">Find And Book</span>
+          <span class="title-line gradient-text">A Great Experience</span>
+        </h1>
+        <p class="hero-subtitle">Discover amazing destinations and book your perfect flight with our world-class service</p>
+      </div>
+      <div class="hero-image">
+        <img src="../../../assets/images/header.jpg" alt="Travel Experience" class="hero-img">
+        <div class="image-overlay"></div>
+      </div>
+    </div>
   </header>
-  
-<section class="section__container booking__container">
-    <div class="booking__nav">
-      <span formControlName="seatClass">Economy Class</span>
-      <span formControlName="seatClass">Business Class</span>
+
+  <!-- Enhanced Flight Search Section -->
+  <section class="search-section">
+    <div class="search-container">
+      <div class="search-header">
+        <h2 class="search-title">Search Flights</h2>
+        <p class="search-subtitle">Find the best deals for your next adventure</p>
       </div>
 
-       <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
-        <!-- ✅ Departure City Input with Autocomplete -->
-        <div class="autocomplete-container">
-            <input type="text" formControlName="departureCity" placeholder="From">
-            <ul class="autocomplete-dropdown" *ngIf="filteredOrigins.length">
-                <li *ngFor="let origin of filteredOrigins" (click)="selectOrigin(origin)">
-                    {{ origin }}
-                </li>
-            </ul>
+      <!-- Class Selection -->
+      <div class="class-selector">
+        <div class="class-tabs">
+          <button 
+            class="class-tab" 
+            [class.active]="selectedClass === 'economy'"
+            (click)="selectClass('economy')">
+            <i class="fas fa-chair"></i>
+            <span>Economy Class</span>
+          </button>
+          <button 
+            class="class-tab" 
+            [class.active]="selectedClass === 'business'"
+            (click)="selectClass('business')">
+            <i class="fas fa-crown"></i>
+            <span>Business Class</span>
+          </button>
+          <button 
+            class="class-tab" 
+            [class.active]="selectedClass === 'first'"
+            (click)="selectClass('first')">
+            <i class="fas fa-gem"></i>
+            <span>First Class</span>
+          </button>
         </div>
- <!-- ✅ Arrival City Input with Autocomplete -->
-        <div class="autocomplete-container">
-            <input type="text" formControlName="arrivalCity" placeholder="To">
-            <ul class="autocomplete-dropdown" *ngIf="filteredDestinations.length">
-                <li *ngFor="let destination of filteredDestinations" (click)="selectDestination(destination)">
-                    {{ destination }}
+      </div>
+
+      <!-- Enhanced Search Form -->
+      <form [formGroup]="searchForm" (ngSubmit)="onSubmit()" class="search-form">
+        <div class="form-grid">
+          
+          <!-- Departure City with Enhanced Autocomplete -->
+          <div class="form-field departure-field">
+            <label class="field-label">
+              <i class="fas fa-plane-departure"></i>
+              From
+            </label>
+            <div class="autocomplete-container" [class.focused]="focusedField === 'departure'">
+              <input 
+                type="text" 
+                formControlName="departureCity" 
+                placeholder="Departure city"
+                class="form-input"
+                (focus)="onFieldFocus('departure')"
+                (blur)="onFieldBlur('departure')"
+                autocomplete="off">
+              <div class="input-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <ul class="autocomplete-dropdown" *ngIf="filteredOrigins.length && focusedField === 'departure'">
+                <li *ngFor="let origin of filteredOrigins; let i = index" 
+                    (click)="selectOrigin(origin)"
+                    class="dropdown-item"
+                    [style.animation-delay.ms]="i * 50">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>{{ origin }}</span>
                 </li>
-            </ul>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="swap-container">
+            <button type="button" class="swap-btn" (click)="swapCities()">
+              <i class="fas fa-exchange-alt"></i>
+            </button>
+          </div>
+
+          <!-- Arrival City with Enhanced Autocomplete -->
+          <div class="form-field arrival-field">
+            <label class="field-label">
+              <i class="fas fa-plane-arrival"></i>
+              To
+            </label>
+            <div class="autocomplete-container" [class.focused]="focusedField === 'arrival'">
+              <input 
+                type="text" 
+                formControlName="arrivalCity" 
+                placeholder="Destination city"
+                class="form-input"
+                (focus)="onFieldFocus('arrival')"
+                (blur)="onFieldBlur('arrival')"
+                autocomplete="off">
+              <div class="input-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <ul class="autocomplete-dropdown" *ngIf="filteredDestinations.length && focusedField === 'arrival'">
+                <li *ngFor="let destination of filteredDestinations; let i = index" 
+                    (click)="selectDestination(destination)"
+                    class="dropdown-item"
+                    [style.animation-delay.ms]="i * 50">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span>{{ destination }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Date Picker -->
+          <div class="form-field date-field">
+            <label class="field-label">
+              <i class="fas fa-calendar-alt"></i>
+              Departure Date
+            </label>
+            <div class="date-container">
+              <input 
+                type="date" 
+                formControlName="departureTime"
+                class="form-input date-input"
+                [min]="minDate">
+              <div class="input-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Passengers -->
+          <div class="form-field passengers-field">
+            <label class="field-label">
+              <i class="fas fa-users"></i>
+              Passengers
+            </label>
+            <div class="passengers-container">
+              <button type="button" class="passenger-btn" (click)="decreasePassengers()">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="passenger-count">{{ passengerCount }}</span>
+              <button type="button" class="passenger-btn" (click)="increasePassengers()">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Button -->
+          <div class="form-field search-btn-field">
+            <button type="submit" class="search-btn" [disabled]="searchForm.invalid || isSearching">
+              <span class="btn-content" *ngIf="!isSearching">
+                <i class="fas fa-search"></i>
+                Search Flights
+              </span>
+              <span class="btn-content loading" *ngIf="isSearching">
+                <div class="spinner"></div>
+                Searching...
+              </span>
+            </button>
+          </div>
         </div>
-        <input type="date" formControlName="departureTime">
-        <button type="submit">Search Flights</button>
-    </form>
-</section>
+      </form>
+    </div>
+  </section>
 
-
-
-
-
-
-
-
-    
-   
-
-     
-    
-       
-      
-       
-
-
-
-
-
-    <section class="section__container plan__container">
-        <p class="subheader">TRAVEL SUPPORT</p>
-        <h2 class="section__header">Plan your travel with confidence</h2>
-        <p class="description">
-          Find help with your bookings and travel plans, and seee what to expect
-          along your journey.
+  <!-- Enhanced Features Section -->
+  <section class="features-section">
+    <div class="features-container">
+      <div class="features-header">
+        <p class="features-subtitle">TRAVEL SUPPORT</p>
+        <h2 class="features-title">Plan your travel with confidence</h2>
+        <p class="features-description">
+          Find help with your bookings and travel plans, and see what to expect along your journey.
         </p>
-        <div class="plan__grid">
-          <div class="plan__content">
-            <span class="number">01</span>
-            <h4>Travel Requirements for Dubai</h4>
-            <p>
-              Stay informed and prepared for your trip to Dubai with essential
-              travel requirements, ensuring a smooth and hassle-free experience in
-              this vibrant and captivating city.
-            </p>
-            <span class="number">02</span>
-            <h4>Multi-risk travel insurance</h4>
-            <p>
-              Comprehensive protection for your peace of mind, covering a range of
-              potential travel risks and unexpected situations.
-            </p>
-            <span class="number">03</span>
-            <h4>Travel Requirements by destinations</h4>
-            <p>
-              Stay informed and plan your trip with ease, as we provide up-to-date
-              information on travel requirements specific to your desired
-              destinations.
-            </p>
-          </div>
-          <div class="plan__image">
-            <img src="assets/images/plan-1.jpg" alt="plan" />
-            <img src="assets/images/plan-2.jpg" alt="plan" />
-            <img src="assets/images/plan-3.jpg" alt="plan" />
+      </div>
+      
+      <div class="features-grid">
+        <div class="features-content">
+          <div class="feature-item" *ngFor="let feature of features; let i = index" 
+               [style.animation-delay.ms]="i * 200">
+            <div class="feature-number">{{ feature.number }}</div>
+            <div class="feature-content">
+              <h4 class="feature-title">{{ feature.title }}</h4>
+              <p class="feature-description">{{ feature.description }}</p>
+            </div>
+            <div class="feature-icon">
+              <i [class]="feature.icon"></i>
+            </div>
           </div>
         </div>
-      </section>
-    
-      <div class="section__container memories__container">
-        <div class="memories__header">
-          <h2 class="section__header">
-            Travel to make memories all around the world
-          </h2>
-          <button class="view__all">View All</button>
-        </div>
-        <div class="memories__grid">
-          <div class="memories__card">
-            <span><i class="ri-calendar-2-line"></i></span>
-            <h4>Book & relax</h4>
-            <p>
-              With "Book and Relax," you can sit back, unwind, and enjoy the
-              journey while we take care of everything else.
-            </p>
-          </div>
-          <div class="memories__card">
-            <span><i class="ri-shield-check-line"></i></span>
-            <h4>Smart Checklist</h4>
-            <p>
-              Introducing Smart Checklist with us, the innovative solution
-              revolutionizing the way you travel with our airline.
-            </p>
-          </div>
-          <div class="memories__card">
-            <span><i class="ri-bookmark-2-line"></i></span>
-            <h4>Save More</h4>
-            <p>
-              From discounted ticket prices to exclusive promotions and deals,
-              we prioritize affordability without compromising on quality.
-            </p>
+        
+        <div class="features-images">
+          <div class="image-stack">
+            <img src="assets/images/plan-1.jpg" alt="Travel Planning" class="feature-img img-1">
+            <img src="assets/images/plan-2.jpg" alt="Travel Insurance" class="feature-img img-2">
+            <img src="assets/images/plan-3.jpg" alt="Travel Requirements" class="feature-img img-3">
           </div>
         </div>
       </div>
-    
-    <section class="section__container lounge__container">
-      <div class="lounge__image">
-        <img src="assets/images/lounge-1.jpg" alt="lounge" />
-        <img src="assets/images/lounge-2.jpg" alt="lounge" />
+    </div>
+  </section>
+
+  <!-- Enhanced Services Section -->
+  <section class="services-section">
+    <div class="services-container">
+      <div class="services-header">
+        <h2 class="services-title">Travel to make memories all around the world</h2>
+        <button class="view-all-btn">
+          <span>View All</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </div>
-      <div class="lounge__content">
-        <h2 class="section__header">Unaccompanied Minor Lounge</h2>
-        <div class="lounge__grid">
-          <div class="lounge__details">
-            <h4>Experience Tranquility</h4>
-            <p>
-              Serenity Haven offers a tranquil escape, featuring comfortable
-              seating, calming ambiance, and attentive service.
-            </p>
+      
+      <div class="services-grid">
+        <div class="service-card" *ngFor="let service of services; let i = index"
+             [style.animation-delay.ms]="i * 150">
+          <div class="service-icon">
+            <i [class]="service.icon"></i>
           </div>
-          <div class="lounge__details">
-            <h4>Elevate Your Experience</h4>
-            <p>
-              Designed for discerning travelers, this exclusive lounge offers
-              premium amenities, assistance, and private workspaces.
-            </p>
-          </div>
-          <div class="lounge__details">
-            <h4>A Welcoming Space</h4>
-            <p>
-              Creating a family-friendly atmosphere, The Family Zone is the
-              perfect haven for parents and children.
-            </p>
-          </div>
-          <div class="lounge__details">
-            <h4>A Culinary Delight</h4>
-            <p>
-              Immerse yourself in a world of flavors, offering international
-              cuisines, gourmet dishes, and carefully curated beverages.
-            </p>
-          </div>
+          <h4 class="service-title">{{ service.title }}</h4>
+          <p class="service-description">{{ service.description }}</p>
+          <div class="service-hover-effect"></div>
         </div>
       </div>
-    </section>
-    
-    <section class="section__container travellers__container">
-      <h2 class="section__header">Best travellers of the month</h2>
-      <div class="travellers__grid">
-        <div class="travellers__card">
-          <img src="assets/images/traveller-1.jpg" alt="traveller" />
-          <div class="travellers__card__content">
-            <img src="assets/images/client-1.jpg" alt="client" />
-            <h4>Emily Johnson</h4>
-            <p>Dubai</p>
+    </div>
+  </section>
+
+  <!-- Enhanced Flight Results -->
+  <section class="results-section" *ngIf="flights.length > 0">
+    <div class="results-container">
+      <div class="results-header">
+        <h2 class="results-title">Available Flights</h2>
+        <div class="results-count">{{ flights.length }} flights found</div>
+      </div>
+      
+      <div class="flights-grid">
+        <div class="flight-card" *ngFor="let flight of flights; let i = index"
+             [style.animation-delay.ms]="i * 100">
+          <div class="flight-header">
+            <div class="airline-info">
+              <div class="airline-logo">
+                <i class="fas fa-plane"></i>
+              </div>
+              <div class="airline-details">
+                <h4 class="airline-name">{{ flight.airline.airlineCode }}-{{ flight.flightNumber }}</h4>
+                <p class="flight-type">{{ selectedClass | titlecase }} Class</p>
+              </div>
+            </div>
+            <div class="flight-price">
+              <span class="currency">₹</span>
+              <span class="amount">{{ flight.ticketPrice | number }}</span>
+            </div>
           </div>
-        </div>
-        <div class="travellers__card">
-          <img src="assets/images/traveller-2.jpg" alt="traveller" />
-          <div class="travellers__card__content">
-            <img src="assets/images/client-2.jpg" alt="client" />
-            <h4>David Smith</h4>
-            <p>Paris</p>
+          
+          <div class="flight-route">
+            <div class="departure">
+              <div class="time">{{ flight.departureTime }}</div>
+              <div class="city">{{ flight.departureAirport }}</div>
+            </div>
+            
+            <div class="flight-path">
+              <div class="path-line"></div>
+              <div class="plane-icon">
+                <i class="fas fa-plane"></i>
+              </div>
+              <div class="duration">{{ flight.duration }}h</div>
+            </div>
+            
+            <div class="arrival">
+              <div class="time">{{ flight.arrivalTime }}</div>
+              <div class="city">{{ flight.arrivalAirport }}</div>
+            </div>
           </div>
-        </div>
-        <div class="travellers__card">
-          <img src="assets/images/traveller-3.jpg" alt="traveller" />
-          <div class="travellers__card__content">
-            <img src="assets/images/client-3.jpg" alt="client" />
-            <h4>Olivia Brown</h4>
-            <p>Singapore</p>
-          </div>
-        </div>
-        <div class="travellers__card">
-          <img src="assets/images/traveller-4.jpg" alt="traveller" />
-          <div class="travellers__card__content">
-            <img src="assets/images/client-4.jpg" alt="client" />
-            <h4>Daniel Taylor</h4>
-            <p>Malaysia</p>
+          
+          <div class="flight-actions">
+            <button class="book-btn" (click)="bookFlight(flight)">
+              <i class="fas fa-ticket-alt"></i>
+              Book Now
+            </button>
           </div>
         </div>
       </div>
-    </section>
-      <div class="panel panel-primary justify-content-center">
-        <div class="panel-body">
-          <table class="table table-striped table-responsive">
-            <thead>
-              <tr>
-                <th>Flight Name</th>
-                <th>From</th>
-                <th>Departure Time</th>
-                <th>To</th>
-                <th>Arrival Time</th>
-                <th>Duration (Hours)</th>
-                <th>Amount</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let flight of flights">
-                <td>{{flight.airline.airlineCode}}-{{flight.flightNumber}}</td>
-                <td>{{flight.departureAirport}}</td>
-                <td>{{flight.departureTime}}</td>
-                <td>{{flight.arrivalAirport}}</td>
-                <td>{{flight.arrivalTime}}</td>
-                <td>{{flight.duration}}</td>
-                <td><i class="fa fa-rupee"></i>{{flight.ticketPrice}}</td>
-                <td>
-                  <button class="btn btn-success">Book</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    
-      <section class="section__container subscribe__container">
-        <h2 class="section__header">Subscribe newsletter & get latest news</h2>
-        <form class="subscribe__form">
-          <input type="text" placeholder="Enter your email here" />
-          <button class="btn">Subscribe</button>
+    </div>
+  </section>
+
+  <!-- Enhanced Newsletter Section -->
+  <section class="newsletter-section">
+    <div class="newsletter-container">
+      <div class="newsletter-content">
+        <h2 class="newsletter-title">Subscribe newsletter & get latest news</h2>
+        <p class="newsletter-subtitle">Stay updated with the best travel deals and destinations</p>
+        <form class="newsletter-form" (ngSubmit)="subscribeNewsletter()">
+          <div class="newsletter-input-container">
+            <input 
+              type="email" 
+              placeholder="Enter your email here" 
+              class="newsletter-input"
+              [(ngModel)]="newsletterEmail"
+              name="email">
+            <button type="submit" class="newsletter-btn">
+              <i class="fas fa-paper-plane"></i>
+              Subscribe
+            </button>
+          </div>
         </form>
-      </section>
-    
-      <footer class="footer">
-        <div class="section__container footer__container">
-          <div class="footer__col">
-            <h3>Flivan</h3>
-            <p>
-              Where Excellence Takes Flight. With a strong commitment to customer
-              satisfaction and a passion for air travel, Flivan Airlines offers
-              exceptional service and seamless journeys.
-            </p>
-          </div>
-          <div class="footer__col">
-            <h4>INFORMATION</h4>
-            <p>Home</p>
-            <p>About</p>
-            <p>Offers</p>
-            <p>Seats</p>
-            <p>Destinations</p>
-          </div>
-          <div class="footer__col">
-            <h4>CONTACT</h4>
-            <p>Support</p>
-            <p>Media</p>
-            <p>Socials</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Enhanced Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-col">
+          <h3 class="footer-logo">
+            <i class="fas fa-plane"></i>
+            SkyBooker
+          </h3>
+          <p class="footer-description">
+            Where Excellence Takes Flight. With a strong commitment to customer satisfaction and a passion for air travel, SkyBooker offers exceptional service and seamless journeys.
+          </p>
+          <div class="social-links">
+            <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
           </div>
         </div>
-        <div class="section__container footer__bar">
-          <p>Copyright © 2023 Web Design Mastery. All rights reserved.</p>
+        
+        <div class="footer-col">
+          <h4 class="footer-title">Information</h4>
+          <ul class="footer-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Offers</a></li>
+            <li><a href="#">Seats</a></li>
+            <li><a href="#">Destinations</a></li>
+          </ul>
         </div>
-      </footer>
-    
-    
-   
+        
+        <div class="footer-col">
+          <h4 class="footer-title">Contact</h4>
+          <ul class="footer-links">
+            <li><a href="#">Support</a></li>
+            <li><a href="#">Media</a></li>
+            <li><a href="#">Socials</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-col">
+          <h4 class="footer-title">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Help Center</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2024 SkyBooker. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+</div>

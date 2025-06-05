@@ -16,10 +16,14 @@ import { PaymentComponent } from './components/main/payment/payment.component';
 import { BookingHistoryComponent } from './components/main/booking-history/booking-history.component';
 import { PaymentSuccessComponent } from './components/main/payment-success/payment-success.component';
 import { BookingInformationComponent } from './components/main/booking-information/booking-information.component';
+import { AboutComponent } from './components/main/about/about.component';
+import { ContactComponent } from './components/main/contact/contact.component';
 
 export const routes: Routes = [
 {path:'',component:MainComponent,children:[
     {path:'home',component:HomeComponent},
+    {path:"about",component:AboutComponent},
+    {path:"contact",component:ContactComponent},
     {path:'search',component:SearchComponent},
     { path: 'home/booking/:flightNumber', component: BookingComponent },
     {path:"dashboard/login",component:LoginComponent},

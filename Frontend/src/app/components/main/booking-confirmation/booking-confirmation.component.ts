@@ -1,164 +1,392 @@
-import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BookingService } from '../../../services/booking.service';
-import { CommonModule } from '@angular/common';
-import { FormGroup, FormControl, ReactiveFormsModule } from '@angular/forms';
-import { Validators } from '@angular/forms';
+import { Component, inject, type OnInit, type OnDestroy } from "@angular/core"
+import { ActivatedRoute, Router } from "@angular/router"
+import { BookingService } from "../../../services/booking.service"
+import { CommonModule } from "@angular/common"
+import { FormGroup, FormControl, ReactiveFormsModule, Validators } from "@angular/forms"
+import { Subject, takeUntil } from "rxjs"
+import Swal from "sweetalert2"
+
+enum Gender {
+  Male = 0,
+  Female = 1,
+}
+
+enum SeatClass {
+  Economy = 0,
+  Business = 1,
+}
+
+interface Passenger {
+  id: number
+  firstName: string
+  lastName: string
+  age: number
+  gender: number
+  seatClass: number
+}
 
 @Component({
-  selector: 'app-booking-confirmation',
-  imports:[CommonModule, ReactiveFormsModule],
-  templateUrl: './booking-confirmation.component.html',
-  styleUrls: ['./booking-confirmation.component.css']
+  selector: "app-booking-confirmation",
+  imports: [CommonModule, ReactiveFormsModule],
+  templateUrl: "./booking-confirmation.component.html",
+  styleUrls: ["./booking-confirmation.component.css"],
 })
-export class BookingConfirmationComponent {
-  flightDetails: any;
-  travellerList: any[] = [];
-  FlightId:any;
-  bookingId:any;
-  id:any;
-  totalAmount :any;
-  isEditing = false; // ✅ Track editing state
-  editIndex!: number; 
-  route = inject(ActivatedRoute);
-  bookingService = inject(BookingService);
-  router = inject(Router);
+export class BookingConfirmationComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>()
 
-  travellerForm:any;
-  
+  // Data properties
+  flightDetails: any
+  travellerList: Passenger[] = []
+  FlightId: any
+  bookingId: any
+  id: any
+  totalAmount: any
+
+  // UI state properties
+  isEditing = false
+  isUpdating = false
+  isProcessingPayment = false
+  editIndex!: number
+  showToast = false
+  toastMessage = ""
+  toastType = "success"
+  toastIcon = "fas fa-check-circle"
+
+  // Services
+  route = inject(ActivatedRoute)
+  bookingService = inject(BookingService)
+  router = inject(Router)
+
+  // Form
+  travellerForm: FormGroup
 
   constructor() {
-     this.travellerForm = new FormGroup({
-    id: new FormControl(null),
-    firstName: new FormControl('', Validators.required),
-    lastName: new FormControl('', Validators.required),
-    age: new FormControl(''),
-    gender: new FormControl(''),
-    seatClass: new FormControl('Economy')
-  });
+    this.travellerForm = new FormGroup({
+      id: new FormControl(null),
+      firstName: new FormControl("", Validators.required),
+      lastName: new FormControl("", Validators.required),
+      age: new FormControl("", [Validators.required, Validators.min(1), Validators.max(120)]),
+      gender: new FormControl("", Validators.required),
+      seatClass: new FormControl("Economy"),
+    })
 
-    this.route.params.subscribe(params => {
-    this.FlightId = params['flightId'];
-
-    this.bookingService.getBookingInformation(this.FlightId).subscribe({
-      next: (data: any) => {
-        console.log(data);
-        this.id = data.id; // ✅ Save reservation ID
-        this.bookingId = data.bookingReference;
-        this.flightDetails = data.flight;
-        this.travellerList = data.passengers; // ✅ Load passengers list
-        this.totalAmount = data.totalAmount;
-
- // ✅ Prefill the form with the first passenger's data by default
-        if (this.travellerList.length > 0) {
-          this.travellerForm.patchValue(this.travellerList[0]);
-        }
-      },
-      error: (err) => {
-        console.log(err);
-      }
-    });
-  });
-}
-
-  
-
-
-
-  getSeatClassLabel(value: number): string {
-  const seatClassMap: Record<number, string> = {
-    0: 'Economy',
-    1: 'Business'
-  };
-  return seatClassMap[value] || 'Unknown'; // Handle unexpected values
-}
-calculateTotalFare(): number {
-  return this.travellerList.reduce((total, traveller) => total + traveller.price, 0);
-}
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      this.FlightId = params["flightId"]
+      this.loadBookingInformation()
+    })
+  }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.FlightId = params['flightId'];
-      this.bookingService.getBookingInformation(this.FlightId).subscribe({
+    // Additional initialization if needed
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
+  private loadBookingInformation(): void {
+    this.bookingService
+      .getBookingInformation(this.FlightId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
         next: (data: any) => {
-          console.log(data);
-          this.id= data.id;
-          this.bookingId = data.bookingReference;
-          console.log(this.bookingId);
-          this.flightDetails = data.flight;
-          this.travellerList = data.passengers;
+          console.log(data)
+          this.id = data.id
+          this.bookingId = data.bookingReference
+          this.flightDetails = data.flight
+          this.travellerList = data.passengers
           this.totalAmount = data.totalAmount
+
+          // Prefill the form with the first passenger's data by default
+          if (this.travellerList.length > 0) {
+            this.travellerForm.patchValue(this.travellerList[0])
+          }
         },
         error: (err) => {
-          console.log(err);
-        }
-      });
-    });
+          console.log(err)
+          this.showToastMessage("error", "Failed to load booking information. Please try again.")
+        },
+      })
   }
 
-  editPassenger(traveller: any, index:number) {
-    console.log(traveller);
-  this.travellerForm.patchValue({
-    id: index, // ✅ Ensure passenger ID is set
-    firstName: traveller.firstName,
-    lastName: traveller.lastName,
-    age: traveller.age,
-    gender: traveller.gender,
-    seatClass: traveller.seatClass
-  });
-
-  this.isEditing = true; // ✅ Track editing mode
-
-  console.log(this.travellerForm.value);
-}
-
-updatePassenger() {
-   const genderValue = this.travellerForm.get('gender')?.value;
-  const seatClassValue = this.travellerForm.get('seatClass')?.value;
-
-  // ✅ Convert gender and seatClass to correct enum format
-  const formattedGender = genderValue === 'Male' ? 0 : genderValue === 'Female' ? 1 : null;
-  const formattedSeatClass = seatClassValue === 'Economy' ? 0 : seatClassValue === 'Business' ? 1 : null;
-
-
-  const updatedPassenger = {
-    id: this.travellerForm.get('id')?.value, // ✅ Ensure ID is included
-    firstName: this.travellerForm.get('firstName')?.value,
-    lastName: this.travellerForm.get('lastName')?.value,
-    age: this.travellerForm.get('age')?.value,
-    gender: formattedGender,
-    seatClass: formattedSeatClass
-  };
-
-  console.log("Updating Passenger:", updatedPassenger);
-    console.log("Sending Passenger Update Request:", updatedPassenger);
-
-
-  if (updatedPassenger.id===undefined) {
-    alert("Cannot update passenger: ID is missing.");
-    return;
-  }
-  console.log(this.FlightId);
-  this.bookingService.updatePassenger(this.FlightId, updatedPassenger).subscribe({
-    next: () => {
-      alert("Passenger updated successfully!");
-      
-      this.travellerList = this.travellerList.map(passenger =>
-        passenger.id === updatedPassenger.id ? updatedPassenger : passenger
-      ); // ✅ Ensure correct passenger entry is updated
-
-      this.isEditing = false;
-      this.travellerForm.reset();
-    },
-    error: (err) => {
-      console.error("Error updating passenger:", err);
-      alert("Failed to update passenger. Please try again.");
+  // Helper methods for labels
+  getSeatClassLabel(value: number): string {
+    const seatClassMap: Record<number, string> = {
+      0: "Economy",
+      1: "Business",
     }
-  });
-}
+    return seatClassMap[value] || "Unknown"
+  }
 
+  getGenderLabel(value: number): string {
+    const genderMap: Record<number, string> = {
+      0: "Male",
+      1: "Female",
+    }
+    return genderMap[value] || "Unknown"
+  }
 
-  proceedToPayment() {
-    this.router.navigate(['/payment',this.id]);
+  // Utility methods
+  calculateTotalFare(): number {
+    return this.travellerList.reduce((total, traveller) => total + (traveller as any).price || 0, 0)
+  }
+
+  calculateFlightDuration(): string {
+    if (!this.flightDetails?.departureDateTime || !this.flightDetails?.arrivalDateTime) {
+      return "N/A"
+    }
+
+    const departure = new Date(this.flightDetails.departureDateTime)
+    const arrival = new Date(this.flightDetails.arrivalDateTime)
+    const durationMs = arrival.getTime() - departure.getTime()
+    const hours = Math.floor(durationMs / (1000 * 60 * 60))
+    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+
+    return `${hours}h ${minutes}m`
+  }
+
+  getCurrentDate(): Date {
+    return new Date()
+  }
+
+  getOriginCity(): string {
+    return this.flightDetails?.origin || "N/A"
+  }
+
+  getDestinationCity(): string {
+    return this.flightDetails?.destination || "N/A"
+  }
+
+  // Passenger management methods
+  editPassenger(traveller: Passenger, index: number): void {
+    console.log(traveller)
+    this.travellerForm.patchValue({
+      id: index,
+      firstName: traveller.firstName,
+      lastName: traveller.lastName,
+      age: traveller.age,
+      gender: this.getGenderLabel(traveller.gender),
+      seatClass: this.getSeatClassLabel(traveller.seatClass),
+    })
+
+    this.isEditing = true
+    this.editIndex = index
+    console.log(this.travellerForm.value)
+  }
+
+  updatePassenger(): void {
+    if (this.travellerForm.invalid) {
+      this.showToastMessage("error", "Please fill in all required fields correctly.")
+      return
+    }
+
+    this.isUpdating = true
+
+    const genderValue = this.travellerForm.get("gender")?.value
+    const seatClassValue = this.travellerForm.get("seatClass")?.value
+
+    // Convert gender and seatClass to correct enum format with validation
+    const formattedGender = genderValue === "Male" ? 0 : genderValue === "Female" ? 1 : 0 // Default to Male if invalid
+    const formattedSeatClass = seatClassValue === "Economy" ? 0 : seatClassValue === "Business" ? 1 : 0 // Default to Economy if invalid
+
+    // Validate that we have valid enum values
+    if (formattedGender === null || formattedSeatClass === null) {
+      this.showToastMessage("error", "Invalid gender or seat class selection.")
+      this.isUpdating = false
+      return
+    }
+
+    const updatedPassenger: Passenger = {
+      id: this.travellerForm.get("id")?.value,
+      firstName: this.travellerForm.get("firstName")?.value,
+      lastName: this.travellerForm.get("lastName")?.value,
+      age: this.travellerForm.get("age")?.value,
+      gender: formattedGender,
+      seatClass: formattedSeatClass,
+    }
+
+    console.log("Updating Passenger:", updatedPassenger)
+
+    if (updatedPassenger.id === undefined) {
+      this.showToastMessage("error", "Cannot update passenger: ID is missing.")
+      this.isUpdating = false
+      return
+    }
+
+    console.log(this.FlightId)
+    this.bookingService
+      .updatePassenger(this.FlightId, updatedPassenger)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.showToastMessage("success", "Passenger updated successfully!")
+
+          this.travellerList = this.travellerList.map((passenger) =>
+            passenger.id === updatedPassenger.id ? { ...passenger, ...updatedPassenger } : passenger,
+          )
+
+          this.isEditing = false
+          this.isUpdating = false
+          this.travellerForm.reset()
+        },
+        error: (err) => {
+          console.error("Error updating passenger:", err)
+          this.showToastMessage("error", "Failed to update passenger. Please try again.")
+          this.isUpdating = false
+        },
+      })
+  }
+
+  cancelEdit(): void {
+    this.isEditing = false
+    this.isUpdating = false
+    this.travellerForm.reset()
+  }
+
+  // Payment and actions
+  proceedToPayment(): void {
+    Swal.fire({
+      title: "Proceed to Payment?",
+      html: `
+        <div style="text-align: left; margin: 1rem 0;">
+          <p><strong>Booking Reference:</strong> ${this.bookingId}</p>
+          <p><strong>Total Amount:</strong> $${this.totalAmount}</p>
+          <p><strong>Passengers:</strong> ${this.travellerList.length}</p>
+        </div>
+      `,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#667eea",
+      cancelButtonColor: "#718096",
+      confirmButtonText: "Proceed to Payment",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.isProcessingPayment = true
+
+        // Simulate processing delay
+        setTimeout(() => {
+          this.router.navigate(["/payment", this.id])
+          this.isProcessingPayment = false
+        }, 2000)
+      }
+    })
+  }
+
+  // Additional action methods
+  copyBookingId(): void {
+    if (!this.bookingId) return
+
+    navigator.clipboard
+      .writeText(this.bookingId)
+      .then(() => {
+        this.showToastMessage("success", "Booking reference copied to clipboard!")
+      })
+      .catch(() => {
+        this.showToastMessage("error", "Failed to copy booking reference. Please try again.")
+      })
+  }
+
+  downloadTicket(): void {
+    this.showToastMessage("info", "Downloading your e-ticket...")
+
+    // Simulate download process
+    setTimeout(() => {
+      this.showToastMessage("success", "E-ticket downloaded successfully!")
+    }, 2000)
+  }
+
+  shareBooking(): void {
+    const shareData = {
+      title: "Flight Booking Confirmation",
+      text: `Booking Reference: ${this.bookingId} - Flight ${this.flightDetails?.flightNumber}`,
+      url: window.location.href,
+    }
+
+    if (navigator.share) {
+      navigator
+        .share(shareData)
+        .then(() => {
+          this.showToastMessage("success", "Booking details shared successfully!")
+        })
+        .catch((error) => {
+          console.error("Error sharing:", error)
+          this.fallbackShare()
+        })
+    } else {
+      this.fallbackShare()
+    }
+  }
+
+  private fallbackShare(): void {
+    const url = window.location.href
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        this.showToastMessage("success", "Booking link copied to clipboard!")
+      })
+      .catch(() => {
+        this.showToastMessage("info", "Share link: " + url)
+      })
+  }
+
+  addToCalendar(): void {
+    if (!this.flightDetails) {
+      this.showToastMessage("error", "Flight details not available.")
+      return
+    }
+
+    const startDate = new Date(this.flightDetails.departureDateTime)
+    const endDate = new Date(this.flightDetails.arrivalDateTime)
+
+    const calendarEvent = {
+      title: `Flight ${this.flightDetails.flightNumber} - ${this.flightDetails.origin} to ${this.flightDetails.destination}`,
+      start: startDate.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
+      end: endDate.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z",
+      description: `Booking Reference: ${this.bookingId}`,
+    }
+
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      calendarEvent.title,
+    )}&dates=${calendarEvent.start}/${calendarEvent.end}&details=${encodeURIComponent(calendarEvent.description)}`
+
+    window.open(calendarUrl, "_blank")
+    this.showToastMessage("success", "Opening calendar to add your flight!")
+  }
+
+  // Toast methods
+  private showToastMessage(type: "success" | "error" | "info", message: string): void {
+    this.toastType = type
+    this.toastMessage = message
+    this.toastIcon = this.getToastIcon(type)
+    this.showToast = true
+
+    // Auto hide after 4 seconds
+    setTimeout(() => {
+      this.hideToast()
+    }, 4000)
+  }
+
+  private getToastIcon(type: string): string {
+    switch (type) {
+      case "success":
+        return "fas fa-check-circle"
+      case "error":
+        return "fas fa-exclamation-circle"
+      case "info":
+        return "fas fa-info-circle"
+      default:
+        return "fas fa-bell"
+    }
+  }
+
+  hideToast(): void {
+    this.showToast = false
+  }
+
+  // Utility methods for template
+  trackByPassengerId(index: number, passenger: Passenger): number {
+    return passenger.id
   }
 }

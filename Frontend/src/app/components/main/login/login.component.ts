@@ -1,89 +1,135 @@
-import { Component, inject} from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
-import { Router, RouterLink } from '@angular/router';
-import { FormControl,FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject } from "@angular/core"
+import { AuthService } from "../../../services/auth.service"
+import {  Router, RouterLink } from "@angular/router"
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
+import { CommonModule } from "@angular/common"
+
+interface FormErrors {
+  [key: string]: string
+}
 
 @Component({
-  selector: 'app-login',
-  imports: [ReactiveFormsModule,RouterLink],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  selector: "app-login",
+  imports: [ReactiveFormsModule, RouterLink, CommonModule],
+  templateUrl: "./login.component.html",
+  styleUrl: "./login.component.css",
 })
-export class LoginComponent{
-  authService = inject(AuthService);
+export class LoginComponent {
+  authService = inject(AuthService)
 
-  constructor(private router: Router) {};
+  // UI State Management
+  focusedField: string | null = null
+  touchedFields: Set<string> = new Set()
+  showPassword = false
+  isLoading = false
+  errors: FormErrors = {}
 
-   formData:FormGroup= new FormGroup({
-  email:new FormControl('',Validators.required),
-  password:new FormControl('',[Validators.required])
-})
+  constructor(private router: Router) {}
 
+  // Form Definition (keeping your original structure)
+  formData: FormGroup = new FormGroup({
+    email: new FormControl("", [Validators.required, Validators.email]),
+    password: new FormControl("", [Validators.required, Validators.minLength(6)]),
+  })
 
-
-loginControl(): void {
-  let myFormData = this.formData.value;
-  console.log("🚀 Form Data Before Sending:", myFormData);
-
-  console.log(myFormData);
-  this.authService.signIn(myFormData).subscribe({
-    next: (data: any) => {
-      console.log("✅ Login Success", data);
-      localStorage.setItem("token", data.token);
-      this.router.navigateByUrl(data.role === "Admin" ? '/dashboard' : '/home');
-    },
-    error: (err: any) => {
-      console.error("❌ Login Failed", err);
+  // Field validation methods
+  validateField(fieldName: string, value: string): string {
+    switch (fieldName) {
+      case "email":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return !emailRegex.test(value) ? "Please enter a valid email" : ""
+      case "password":
+        return value.length < 6 ? "Password must be at least 6 characters" : ""
+      default:
+        return ""
     }
-  });
+  }
+
+  // UI Event Handlers
+  onFieldFocus(fieldName: string): void {
+    this.focusedField = fieldName
+  }
+
+  onFieldBlur(fieldName: string): void {
+    this.focusedField = null
+    this.touchedFields.add(fieldName)
+
+    const control = this.formData.get(fieldName)
+    if (control) {
+      const error = this.validateField(fieldName, control.value || "")
+      if (error) {
+        this.errors[fieldName] = error
+      } else {
+        delete this.errors[fieldName]
+      }
+    }
+  }
+
+  onFieldInput(fieldName: string, event: any): void {
+    const value = event.target.value
+
+    // Real-time validation for touched fields
+    if (this.touchedFields.has(fieldName)) {
+      const error = this.validateField(fieldName, value)
+      if (error) {
+        this.errors[fieldName] = error
+      } else {
+        delete this.errors[fieldName]
+      }
+    }
+  }
+
+  // Utility methods for template
+  getFieldError(fieldName: string): string {
+    return this.touchedFields.has(fieldName) ? this.errors[fieldName] || "" : ""
+  }
+
+  isFieldValid(fieldName: string): boolean {
+    const control = this.formData.get(fieldName)
+    return this.touchedFields.has(fieldName) && control?.valid === true && control?.value?.trim() !== ""
+  }
+
+  togglePassword(): void {
+    this.showPassword = !this.showPassword
+  }
+
+  // Enhanced login control (keeping your original logic)
+  loginControl(): void {
+    // Mark all fields as touched for validation display
+    Object.keys(this.formData.controls).forEach((key) => {
+      this.touchedFields.add(key)
+      const control = this.formData.get(key)
+      if (control) {
+        const error = this.validateField(key, control.value || "")
+        if (error) {
+          this.errors[key] = error
+        }
+      }
+    })
+
+    // Check if form is valid
+    if (this.formData.invalid || Object.keys(this.errors).length > 0) {
+      return
+    }
+
+    this.isLoading = true
+
+    const myFormData = this.formData.value
+    console.log("🚀 Form Data Before Sending:", myFormData)
+
+    this.authService.signIn(myFormData).subscribe({
+      next: (data: any) => {
+        console.log("✅ Login Success", data)
+        localStorage.setItem("token", data.token)
+        this.isLoading = false
+        this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/home")
+      },
+      error: (err: any) => {
+        console.error("❌ Login Failed", err)
+        this.isLoading = false
+        // You can add error handling here for API errors
+        this.errors["general"] = "Login failed. Please check your credentials."
+      },
+    })
+  }
 }
-}
-
-
-
-
-
-// refreshCaptcha(){
-// this.authService.getCaptcha().subscribe((data: any) => {
-//     this.captchaUrl = `data:image/png;base64,${data.image}`; 
-//     console.log("CAPTCHA Image URL:", this.captchaUrl);
-
-//     console.log("New CAPTCHA Text:", data.captchaText); 
-//   });
-// }
-//  loginControl(): void {
-//   // Add logic to validate user credentials here
-//   let myFormData = this.formData.value;
-//     console.log(this.formData.value);
-//     console.log("Captcha being sent:", this.formData.value.captchaText);
-
-//     if (!myFormData.captchaText) {
-//     console.error("🚨 CAPTCHA is missing!");
-//     return;
-//   }
-//     this.authService.signIn(myFormData)
-//       .subscribe({
-//         next:(data:any)=>{
-//           var token = data.token;
-//           // localstorage save
-//           localStorage.setItem("token",token);
-//           console.log(token);
-//           console.log("Extracted Role:", this.authService.dataFromToken());
-//           if(this.authService.dataFromToken()=="User"){
-           
-//             this.router.navigateByUrl('/home');
-//           }
-//           if(this.authService.dataFromToken()=="Admin"){
-//             this.router.navigateByUrl('/dashboard')
-//           }
-//           // else {
-//           //   console.error('Login failed:', data.msg);
-//           // }
-//         },
-//         error:(err:any)=>{
-//           console.log(err);
-//         }
-//       })
-//   // Navigate to the dashboard
-//   // this.router.navigate(['/dashboard/dashboard']);
-// }

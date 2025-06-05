@@ -1,76 +1,319 @@
 <div class="booking-info-container">
-  <h2>Booking Details</h2>
-
-  <div *ngIf="!bookingData" class="loading-message">
-    <p>Loading booking details...</p>
+  <!-- Enhanced Header Section -->
+  <div class="booking-header">
+    <div class="header-background">
+      <div class="animated-gradient"></div>
+      <div class="floating-elements">
+        <div class="element element-1"></div>
+        <div class="element element-2"></div>
+        <div class="element element-3"></div>
+      </div>
+    </div>
+    
+    <div class="header-content">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item" (click)="goBack()">
+          <i class="fas fa-history"></i>
+          Booking History
+        </span>
+        <i class="fas fa-chevron-right breadcrumb-separator"></i>
+        <span class="breadcrumb-item active">Booking Details</span>
+      </div>
+      
+      <h1 class="page-title">
+        <span class="title-icon">
+          <i class="fas fa-ticket-alt"></i>
+        </span>
+        <span class="title-text">Booking Information</span>
+      </h1>
+    </div>
   </div>
 
-  <div *ngIf="bookingData">
-    <table class="booking-details-table">
-      <tr>
-        <td><strong>Booking Reference:</strong></td>
-        <td>{{ bookingData.bookingReference }}</td>
-      </tr>
-      <tr>
-        <td><strong>Flight Number:</strong></td>
-        <td>{{ bookingData.flight.flightNumber }}</td>
-      </tr>
-      <tr>
-        <td><strong>Source:</strong></td>
-        <td>{{ bookingData.flight.origin }}</td>
-      </tr>
-      <tr>
-        <td><strong>Destination:</strong></td>
-        <td>{{ bookingData.flight.destination }}</td>
-      </tr>
-      <tr>
-        <td><strong>Departure:</strong></td>
-        <td>{{ bookingData.flight.departureDateTime | date:'dd MMM yyyy, hh:mm a' }}</td>
-      </tr>
-      <tr>
-        <td><strong>Arrival:</strong></td>
-        <td>{{ bookingData.flight.arrivalDateTime | date:'dd MMM yyyy, hh:mm a' }}</td>
-      </tr>
-      <tr  *ngIf="bookingData?.status !== undefined">
-         <td><strong>Booking Status:</strong></td>
-        <td> {{ bookingData.status === 0 ? 'Pending' :
-       bookingData.status === 1 ? 'Confirmed' :
-       bookingData.status === 2 ? 'Cancelled' :
-       bookingData.status === 3 ? 'Refunded' : 'Unknown' }}</td>
-  
-      </tr>
-      <tr>
-        <td><strong>Payment Method:</strong></td>
-        <td>{{ bookingData.payment.paymentMethod}} ({{bookingData.payment.status}})</td>
-      </tr>
-      <tr>
-        <td><strong>Passengers:</strong></td>
-        <td>
-          <ul *ngIf="bookingData.passengers?.length > 0">
-            <li *ngFor="let passenger of bookingData.passengers">
-              {{ passenger.firstName }} {{ passenger.lastName }} - {{ passenger.seatClass }}
-            </li>
-          </ul>
-          <p *ngIf="bookingData.passengers?.length === 0">No passengers found.</p>
-        </td>
-      </tr>
-    </table>
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="!bookingData">
+    <div class="loading-content">
+      <div class="loading-animation">
+        <div class="ticket-loading">
+          <div class="ticket-shape">
+            <div class="ticket-hole ticket-hole-1"></div>
+            <div class="ticket-hole ticket-hole-2"></div>
+            <div class="ticket-hole ticket-hole-3"></div>
+          </div>
+        </div>
+        <div class="loading-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+      <h3 class="loading-title">Loading your booking details...</h3>
+      <p class="loading-subtitle">Please wait while we fetch your information</p>
+    </div>
   </div>
-  <tr *ngIf="bookingData.status === 0 && bookingData?.expiresAt">
-  <td><strong>Expires In:</strong></td>
-  <td>{{ getExpirationCountdown(bookingData.expiresAt) }}</td>
-</tr>
 
+  <!-- Main Content -->
+  <div class="booking-content" *ngIf="bookingData">
+    
+    <!-- Status Banner -->
+    <div class="status-banner" [class]="getStatusClass(bookingData.status)">
+      <div class="status-icon">
+        <i [class]="getStatusIcon(bookingData.status)"></i>
+      </div>
+      <div class="status-content">
+        <h3 class="status-title">{{ getStatusTitle(bookingData.status) }}</h3>
+        <p class="status-description">{{ getStatusDescription(bookingData.status) }}</p>
+      </div>
+      
+      <!-- Countdown Timer for Pending Bookings -->
+      <div class="countdown-container" *ngIf="bookingData.status === 0 && bookingData.expiresAt">
+        <div class="countdown-label">Expires in:</div>
+        <div class="countdown-timer">
+          <div class="countdown-segment">
+            <span class="countdown-number">{{ getCountdownMinutes() }}</span>
+            <span class="countdown-unit">min</span>
+          </div>
+          <div class="countdown-separator">:</div>
+          <div class="countdown-segment">
+            <span class="countdown-number">{{ getCountdownSeconds() }}</span>
+            <span class="countdown-unit">sec</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-<button *ngIf="bookingData?.canCancel" class="btn btn-danger" (click)="cancelReservation()">
-  Cancel Reservation
-</button>
+    <!-- Booking Reference Card -->
+    <div class="reference-card">
+      <div class="reference-header">
+        <h4 class="reference-title">
+          <i class="fas fa-barcode"></i>
+          Booking Reference
+        </h4>
+        <button class="copy-btn" (click)="copyReference()" title="Copy Reference">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+      <div class="reference-code">{{ bookingData.bookingReference }}</div>
+    </div>
 
+    <!-- Flight Information Card -->
+    <div class="info-card flight-card">
+      <div class="card-header">
+        <h4 class="card-title">
+          <i class="fas fa-plane"></i>
+          Flight Information
+        </h4>
+        <div class="flight-badge">
+          <i class="fas fa-star"></i>
+          {{ bookingData.flight.flightNumber }}
+        </div>
+      </div>
+      
+      <div class="flight-route">
+        <div class="route-point departure">
+          <div class="route-icon">
+            <i class="fas fa-plane-departure"></i>
+          </div>
+          <div class="route-details">
+            <h5 class="route-city">{{ bookingData.flight.origin }}</h5>
+            <p class="route-time">{{ bookingData.flight.departureDateTime | date:'dd MMM yyyy' }}</p>
+            <p class="route-time-detail">{{ bookingData.flight.departureDateTime | date:'hh:mm a' }}</p>
+          </div>
+        </div>
+        
+        <div class="route-middle">
+          <div class="route-line">
+            <div class="route-progress"></div>
+            <div class="route-plane">
+              <i class="fas fa-plane"></i>
+            </div>
+          </div>
+          <div class="route-duration">{{ calculateFlightDuration() }}</div>
+        </div>
+        
+        <div class="route-point arrival">
+          <div class="route-icon">
+            <i class="fas fa-plane-arrival"></i>
+          </div>
+          <div class="route-details">
+            <h5 class="route-city">{{ bookingData.flight.destination }}</h5>
+            <p class="route-time">{{ bookingData.flight.arrivalDateTime | date:'dd MMM yyyy' }}</p>
+            <p class="route-time-detail">{{ bookingData.flight.arrivalDateTime | date:'hh:mm a' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <!-- Show "Proceed to Payment" only for Pending bookings -->
-    <button *ngIf="bookingData.status === 0" class="btn btn-warning" (click)="proceedToPayment()">
-      Proceed to Payment
-    </button> 
+    <!-- Passengers Information Card -->
+    <div class="info-card passengers-card">
+      <div class="card-header">
+        <h4 class="card-title">
+          <i class="fas fa-users"></i>
+          Passenger Information
+        </h4>
+        <div class="passenger-count">
+          {{ bookingData.passengers.length || 0 }} 
+          {{ (bookingData.passengers.length || 0) === 1 ? 'Passenger' : 'Passengers' }}
+        </div>
+      </div>
+      
+      <div class="passengers-list" *ngIf="bookingData.passengers.length > 0">
+        <div class="passenger-item" *ngFor="let passenger of bookingData.passengers; let i = index"
+             [style.animation-delay.ms]="i * 100">
+          <div class="passenger-avatar">
+            <i class="fas fa-user"></i>
+          </div>
+          <div class="passenger-details">
+            <h5 class="passenger-name">{{ passenger.firstName }} {{ passenger.lastName }}</h5>
+            <p class="passenger-class">
+              <i class="fas" [class.fa-chair]="passenger.seatClass === 'Economy'" 
+                 [class.fa-crown]="passenger.seatClass === 'Business'"></i>
+              {{ passenger.seatClass }} Class
+            </p>
+          </div>
+          <div class="passenger-status">
+            <span class="status-dot confirmed"></span>
+            <span class="status-text">Confirmed</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="no-passengers" *ngIf="bookingData.passengers.length === 0">
+        <i class="fas fa-user-slash"></i>
+        <p>No passengers found for this booking.</p>
+      </div>
+    </div>
 
-  <button class="btn btn-secondary" (click)="goBack()">Back to Booking History</button>
+    <!-- Payment Information Card -->
+    <div class="info-card payment-card">
+      <div class="card-header">
+        <h4 class="card-title">
+          <i class="fas fa-credit-card"></i>
+          Payment Information
+        </h4>
+        <div class="payment-status" [class]="getPaymentStatusClass(bookingData.payment.status)">
+          <i [class]="getPaymentStatusIcon(bookingData.payment.status)"></i>
+          {{ bookingData.payment.status }}
+        </div>
+      </div>
+      
+      <div class="payment-details">
+        <div class="payment-method">
+          <div class="payment-icon">
+            <i [class]="getPaymentMethodIcon(bookingData.payment.paymentMethod)"></i>
+          </div>
+          <div class="payment-info">
+            <h5 class="payment-title">{{ bookingData.payment.paymentMethod }}</h5>
+            <p class="payment-description">{{ getPaymentDescription(bookingData.payment.paymentMethod) }}</p>
+          </div>
+        </div>
+        
+        <!-- Refund Information -->
+        <div class="refund-info" *ngIf="bookingData.refundAmount && bookingData.refundAmount > 0">
+          <div class="refund-badge">
+            <i class="fas fa-undo"></i>
+            <span>Refund: ${{ bookingData.refundAmount | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      
+      <!-- Proceed to Payment Button -->
+      <button class="action-btn primary-btn" 
+              *ngIf="bookingData.status === 0" 
+              (click)="proceedToPayment()"
+              [disabled]="isProcessing">
+        <span class="btn-content" *ngIf="!isProcessing">
+          <i class="fas fa-credit-card"></i>
+          <span>Proceed to Payment</span>
+        </span>
+        <span class="btn-loading" *ngIf="isProcessing">
+          <div class="btn-spinner"></div>
+          <span>Processing...</span>
+        </span>
+      </button>
+      
+      <!-- Cancel Reservation Button -->
+      <button class="action-btn danger-btn" 
+              *ngIf="bookingData.canCancel" 
+              (click)="cancelReservation()"
+              [disabled]="isProcessing">
+        <span class="btn-content" *ngIf="!isProcessing">
+          <i class="fas fa-times-circle"></i>
+          <span>Cancel Reservation</span>
+        </span>
+        <span class="btn-loading" *ngIf="isProcessing">
+          <div class="btn-spinner"></div>
+          <span>Cancelling...</span>
+        </span>
+      </button>
+      
+      <!-- Download Ticket Button -->
+      <button class="action-btn secondary-btn" 
+              *ngIf="bookingData.status === 1"
+              (click)="downloadTicket()">
+        <i class="fas fa-download"></i>
+        <span>Download Ticket</span>
+      </button>
+      
+      <!-- Share Button -->
+      <button class="action-btn outline-btn" (click)="shareBooking()">
+        <i class="fas fa-share-alt"></i>
+        <span>Share</span>
+      </button>
+      
+      <!-- Back Button -->
+      <button class="action-btn back-btn" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Back to History</span>
+      </button>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="additional-info">
+      <div class="info-grid">
+        <div class="info-item">
+          <i class="fas fa-calendar-check"></i>
+          <div class="info-content">
+            <span class="info-label">Booking Date</span>
+            <span class="info-value">{{ bookingData.bookingDate | date:'dd MMM yyyy, hh:mm a' }}</span>
+          </div>
+        </div>
+        
+        <div class="info-item" *ngIf="bookingData.totalAmount">
+          <i class="fas fa-dollar-sign"></i>
+          <div class="info-content">
+            <span class="info-label">Total Amount</span>
+            <span class="info-value">${{ bookingData.totalAmount | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <i class="fas fa-shield-alt"></i>
+          <div class="info-content">
+            <span class="info-label">Cancellation Policy</span>
+            <span class="info-value">{{ getCancellationPolicy() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Help Button -->
+  <div class="help-fab" (click)="openHelp()">
+    <i class="fas fa-question"></i>
+  </div>
+</div>
+
+<!-- Success/Error Toast -->
+<div class="toast" [class.show]="showToast" [class]="toastType">
+  <div class="toast-content">
+    <i [class]="toastIcon"></i>
+    <span>{{ toastMessage }}</span>
+  </div>
+  <button class="toast-close" (click)="hideToast()">
+    <i class="fas fa-times"></i>
+  </button>
 </div>
