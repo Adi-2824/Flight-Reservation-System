@@ -1,8 +1,8 @@
 /* Import Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"); */
 
 /* Root Variables - Enhanced Color Palette */
-:root {
+/* :root {
   --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #c026d3 100%);
   --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #0891b2 100%);
   --sunset-gradient: linear-gradient(135deg, #f97316 0%, #db2777 50%, #7c3aed 100%);
@@ -28,11 +28,126 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   --shadow-glow: 0 0 15px rgba(124, 58, 237, 0.5);
+} */
+
+/* Base Styles */
+/* * {
+  box-sizing: border-box;
+} */
+
+/* Import Google Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap");
+
+/* Root Variables - Enhanced Color Palette */
+:root {
+  --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #c026d3 100%);
+  --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #0891b2 100%);
+  --text-primary: #ffffff; /* Adjusted for better contrast */
+  --text-secondary: #e5e7eb; /* Lighter color for readability */
+  --border-color: #b0b3b8;
+  --background-dark: #1f2937;
+  --white: #ffffff;
+  --button-bg: #4f46e5;
 }
 
 /* Base Styles */
 * {
   box-sizing: border-box;
+}
+
+/* Ensure background and text contrast */
+body {
+  background: var(--background-dark);
+  color: var(--text-primary);
+  font-family: "Poppins", sans-serif;
+}
+
+/* Ensure buttons are visible */
+button {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: var(--white);
+  background: var(--button-bg);
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Hover and focus effects */
+button:hover {
+  background: var(--secondary-gradient);
+  transform: translateY(-2px);
+}
+
+button:focus {
+  outline: 3px solid var(--border-color);
+}
+
+/* Ensure parent container is properly aligned */
+/* .submit-container, .social-buttons {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+} */
+ .submit-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+
+/* Remove any hidden overflow */
+.form-section, .form-container {
+  overflow: visible !important;
+}
+
+/* Fix potential overlapping issues */
+button {
+  position: relative;
+  z-index: 9999 !important;
+}
+
+/* Adjust social login buttons */
+.social-btn {
+  width: 100%;
+  max-width: 200px;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.google-btn {
+  background: #db4437;
+}
+
+.facebook-btn {
+  background: #4267b2;
+}
+
+/* Ensure text readability */
+h1, h2, h3, p {
+  color: var(--text-primary);
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Responsive Fixes */
+@media (max-width: 768px) {
+  button {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .submit-container, .social-buttons {
+    flex-direction: column;
+  }
 }
 
 .login-container {
@@ -1001,6 +1116,7 @@
 
 .btn-content {
   display: flex;
+  background-color: #4267b2;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;

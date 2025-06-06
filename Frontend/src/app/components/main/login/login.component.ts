@@ -3,14 +3,18 @@ import { AuthService } from "../../../services/auth.service"
 import {  Router, RouterLink } from "@angular/router"
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
 import { CommonModule } from "@angular/common"
+import {RecaptchaModule} from 'ng-recaptcha'
+
+
 
 interface FormErrors {
   [key: string]: string
 }
+declare const grecaptcha:any;
 
 @Component({
   selector: "app-login",
-  imports: [ReactiveFormsModule, RouterLink, CommonModule],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule,RecaptchaModule],
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.css",
 })
@@ -30,6 +34,7 @@ export class LoginComponent {
   formData: FormGroup = new FormGroup({
     email: new FormControl("", [Validators.required, Validators.email]),
     password: new FormControl("", [Validators.required, Validators.minLength(6)]),
+    captchaToken : new FormControl('')
   })
 
   // Field validation methods
@@ -94,42 +99,54 @@ export class LoginComponent {
   }
 
   // Enhanced login control (keeping your original logic)
+  
+
   loginControl(): void {
-    // Mark all fields as touched for validation display
-    Object.keys(this.formData.controls).forEach((key) => {
-      this.touchedFields.add(key)
-      const control = this.formData.get(key)
-      if (control) {
-        const error = this.validateField(key, control.value || "")
-        if (error) {
-          this.errors[key] = error
-        }
+  grecaptcha.ready(() => {
+    grecaptcha.execute('6LdEhFUrAAAAANWiiA6ZGhKe88YcQp5-1cd_Lz4k', { action: 'login' }).then((token: string) => {
+      this.formData.patchValue({ captchaToken: token }); // ✅ Add CAPTCHA token
+
+      if (!this.formData.value.captchaToken) {
+        alert("❌ CAPTCHA verification failed! Please try again.");
+        return;
       }
-    })
 
-    // Check if form is valid
-    if (this.formData.invalid || Object.keys(this.errors).length > 0) {
-      return
-    }
+      // Mark all fields as touched for validation display
+      Object.keys(this.formData.controls).forEach((key) => {
+        this.touchedFields.add(key);
+        const control = this.formData.get(key);
+        if (control) {
+          const error = this.validateField(key, control.value || "");
+          if (error) {
+            this.errors[key] = error;
+          }
+        }
+      });
 
-    this.isLoading = true
+      // Check if form is valid
+      if (this.formData.invalid || Object.keys(this.errors).length > 0) {
+        return;
+      }
 
-    const myFormData = this.formData.value
-    console.log("🚀 Form Data Before Sending:", myFormData)
+      this.isLoading = true;
 
-    this.authService.signIn(myFormData).subscribe({
-      next: (data: any) => {
-        console.log("✅ Login Success", data)
-        localStorage.setItem("token", data.token)
-        this.isLoading = false
-        this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/home")
-      },
-      error: (err: any) => {
-        console.error("❌ Login Failed", err)
-        this.isLoading = false
-        // You can add error handling here for API errors
-        this.errors["general"] = "Login failed. Please check your credentials."
-      },
-    })
-  }
+      const myFormData = this.formData.value;
+      console.log("🚀 Form Data Before Sending:", myFormData);
+
+      this.authService.signIn(myFormData).subscribe({
+        next: (data: any) => {
+          console.log("✅ Login Success", data);
+          localStorage.setItem("token", data.token);
+          this.isLoading = false;
+          this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/home");
+        },
+        error: (err: any) => {
+          console.error("❌ Login Failed", err);
+          this.isLoading = false;
+          this.errors["general"] = "Login failed. Please check your credentials.";
+        },
+      });
+    });
+  });
+} // ✅ Properly closed method here
 }
