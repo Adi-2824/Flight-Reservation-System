@@ -110,6 +110,8 @@ export class AuthService {
   // User data storage
   userData: any
 
+
+  
   constructor(
     private router: Router,
     private http: HttpClient
@@ -123,6 +125,19 @@ export class AuthService {
    * @param user User registration data
    * @returns Observable<any>
    */
+
+  getUserName(): string {
+  const userData = this.getUserData();
+  
+  if (!userData?.user) {
+    return "Guest"; // Default fallback for missing user
+  }
+
+  const firstName = userData.user.firstName ?? "";
+  const lastName = userData.user.lastName ?? "";
+
+  return `${firstName} ${lastName}`.trim(); // Ensure proper spacing
+}
   signUp(user: any): Observable<any> {
     return this.http.post(`${this.API_URL}/Auth/register`, user)
   }
