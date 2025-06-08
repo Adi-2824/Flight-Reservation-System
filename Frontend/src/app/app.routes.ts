@@ -21,7 +21,7 @@ import { ContactComponent } from './components/main/contact/contact.component';
 
 export const routes: Routes = [
 {path:'',component:MainComponent,children:[
-    {path:'home',component:HomeComponent},
+    {path:'',component:HomeComponent},
     {path:"about",component:AboutComponent},
     {path:"contact",component:ContactComponent},
     {path:'search',component:SearchComponent},

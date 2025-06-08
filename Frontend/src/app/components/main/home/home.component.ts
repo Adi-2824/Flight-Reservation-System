@@ -361,3 +361,151 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Remove hover animations
   }
 }
+
+
+
+
+
+
+
+
+
+
+// import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+// import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+// import { Router } from '@angular/router';
+// import { CommonModule, DatePipe } from '@angular/common';
+// import { FlightsService } from '../../../services/flights.service';
+// import Swal from 'sweetalert2';
+// import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+
+// @Component({
+//   selector: 'app-home',
+//   providers: [DatePipe],
+//   imports: [CommonModule, ReactiveFormsModule, FormsModule], // ✅ Add `CommonModule`
+//   templateUrl: './home.component.html',
+//   styleUrl: './home.component.css',
+// })
+// export class HomeComponent implements OnInit, OnDestroy {
+//   private destroy$ = new Subject<void>();
+
+//   searchForm: FormGroup = new FormGroup({
+//     seatClass: new FormControl('One Way Trip'),
+//     departureCity: new FormControl('', Validators.required),
+//     arrivalCity: new FormControl('', Validators.required),
+//     departureTime: new FormControl('', Validators.required),
+//     returnTime: new FormControl({ value: '', disabled: true }),
+//   });
+
+//   flights: any[] = [];
+//   filteredOrigins: string[] = [];
+//   filteredDestinations: string[] = [];
+//   allOrigins: string[] = [];
+//   allDestinations: string[] = [];
+//   newsletterEmail: string = '';
+//   isRoundTrip = false;
+//   minDate = '';
+
+//   flightService = inject(FlightsService);
+
+//   constructor(private router: Router, private datePipe: DatePipe) {
+//     this.setMinDate();
+//   }
+
+//   ngOnInit() {
+//     this.loadFlightData();
+//     this.setupFormListeners();
+//   }
+
+//   ngOnDestroy() {
+//     this.destroy$.next();
+//     this.destroy$.complete();
+//   }
+
+//   private setMinDate() {
+//     const today = new Date();
+//     this.minDate = today.toISOString().split('T')[0];
+//   }
+
+//   private loadFlightData() {
+//     this.flightService.getFlights().pipe(takeUntil(this.destroy$)).subscribe({
+//       next: (flights: any[]) => {
+//         this.allOrigins = [...new Set(flights.map((flight) => flight.origin))];
+//         this.allDestinations = [...new Set(flights.map((flight) => flight.destination))];
+//       },
+//       error: () => {
+//         Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load flight data.' });
+//       },
+//     });
+//   }
+
+//   private setupFormListeners() {
+//     this.searchForm.get('departureCity')?.valueChanges.pipe(
+//       debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$)
+//     ).subscribe((value) => {
+//       this.filteredOrigins = this.allOrigins.filter((origin) => origin.toLowerCase().includes(value.toLowerCase())).slice(0, 5);
+//     });
+
+//     this.searchForm.get('arrivalCity')?.valueChanges.pipe(
+//       debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$)
+//     ).subscribe((value) => {
+//       this.filteredDestinations = this.allDestinations.filter((destination) => destination.toLowerCase().includes(value.toLowerCase())).slice(0, 5);
+//     });
+
+//     this.searchForm.get('seatClass')?.valueChanges.subscribe((value) => {
+//       this.isRoundTrip = value === 'Round Way Trip';
+//       if (this.isRoundTrip) {
+//         this.searchForm.get('returnTime')?.enable();
+//       } else {
+//         this.searchForm.get('returnTime')?.disable();
+//         this.searchForm.patchValue({ returnTime: '' });
+//       }
+//     });
+//   }
+
+//   selectOrigin(origin: string) {
+//     this.searchForm.get('departureCity')?.setValue(origin);
+//     this.filteredOrigins = [];
+//   }
+
+//   selectDestination(destination: string) {
+//     this.searchForm.get('arrivalCity')?.setValue(destination);
+//     this.filteredDestinations = [];
+//   }
+
+//   swapCities() {
+//     const temp = this.searchForm.value.departureCity;
+//     this.searchForm.patchValue({
+//       departureCity: this.searchForm.value.arrivalCity,
+//       arrivalCity: temp,
+//     });
+//   }
+
+//   onSubmit() {
+//     if (this.searchForm.invalid) {
+//       Swal.fire('Please fill in all required fields.');
+//       return;
+//     }
+
+//     const formData = this.searchForm.value;
+//     const today = new Date().toISOString().split('T')[0];
+//     const selectedDate = this.datePipe.transform(formData.departureTime, 'yyyy-MM-dd') || '';
+
+//     if (selectedDate < today) {
+//       Swal.fire('You cannot select a departure date before today.');
+//       return;
+//     }
+
+//     formData.returnTime = this.datePipe.transform(formData.returnTime, 'yyyy-MM-dd');
+
+//     this.router.navigate(['/search'], {
+//       queryParams: {
+//         origin: formData.departureCity,
+//         destination: formData.arrivalCity,
+//         DepartureDate: selectedDate,
+//         ReturnDate: this.isRoundTrip ? formData.returnTime : null,
+//         isRoundTrip: this.isRoundTrip,
+//       },
+//     });
+//   }
+// }

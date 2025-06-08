@@ -33,7 +33,7 @@
               <th>From City</th>
               <th>To</th>
               <th>Departure Date</th>
-              <!-- <th>Departure Time</th> -->
+              
               <th>Arrival Time</th>
               <th>Price</th>
               <th>Status</th>
@@ -47,7 +47,7 @@
               <td>{{ flight.origin }}</td>
               <td>{{ flight.destination }}</td>
               <td>{{ flight.departureDateTime }}</td>
-              <!-- <td>{{ flight.departureTime }}</td> -->
+              
               <td>{{ flight.arrivalDateTime }}</td>
               <td> {{selectedClass =='Economy'? flight.economyPrice : flight.businessPrice}}</td>
               <td>{{ flight.status |flightStatus }}</td>
