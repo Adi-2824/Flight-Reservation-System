@@ -161,7 +161,7 @@ export class PaymentComponent implements OnInit {
 
       const maskedCardNumber = `**** **** **** ${this.paymentData.cardNumber.slice(-4)}`;
       const storedCard = {
-        cardHolder: this.paymentData.cardHolder,
+        cardHolderName: this.paymentData.cardHolderName, // Fixed: was cardHolder
         cardNumber: maskedCardNumber,
         expiryMonth: this.paymentData.expiryMonth,
         expiryYear: this.paymentData.expiryYear
@@ -202,7 +202,7 @@ export class PaymentComponent implements OnInit {
             });
           } else {
             alert(`Payment successful via ${this.selectedPaymentMethod}. Redirecting...`);
-            this.router.navigate(['/payment-success', { queryParams: { reservationId: this.reservationId } }]);
+            this.router.navigate(['/payment-success', this.reservationId]);
           }
         }
       },

@@ -1,26 +1,31 @@
 <div class="success-page" [@pageEnter]>
   <!-- Animated Background -->
   <div class="animated-background">
-    <div class="particle" 
-         *ngFor="let particle of particles; let i = index" 
-         [style.left.%]="particle.x" 
-         [style.top.%]="particle.y"
-         [style.width.px]="particle.size"
-         [style.height.px]="particle.size"
-         [style.opacity]="particle.opacity"
-         [style.animation-delay.s]="particle.delay"
-         [style.animation-duration.s]="particle.duration">
-    </div>
+    <div
+      class="particle"
+      *ngFor="let particle of particles; let i = index"
+      [style.left.%]="particle.x"
+      [style.top.%]="particle.y"
+      [style.width.px]="particle.size"
+      [style.height.px]="particle.size"
+      [style.opacity]="particle.opacity"
+      [style.animation-delay.s]="particle.delay"
+      [style.animation-duration.s]="particle.duration"
+    ></div>
   </div>
 
   <!-- Confetti Animation -->
   <div class="confetti-container" *ngIf="showConfetti">
-    <div class="confetti-piece" *ngFor="let piece of confetti; let i = index"
-         [style.left.%]="piece.x"
-         [style.background-color]="piece.color"
-         [style.transform]="'rotate(' + piece.rotation + 'deg) scale(' + piece.scale + ')'"
-         [style.animation-delay.ms]="i * 50">
-    </div>
+    <div
+      class="confetti-piece"
+      *ngFor="let piece of confetti; let i = index"
+      [style.left.%]="piece.x"
+      [style.background-color]="piece.color"
+      [style.transform]="
+        'rotate(' + piece.rotation + 'deg) scale(' + piece.scale + ')'
+      "
+      [style.animation-delay.ms]="i * 50"
+    ></div>
   </div>
 
   <div class="container">
@@ -28,35 +33,77 @@
     <div class="success-header">
       <div class="success-icon" [@pulseGlow]>
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-          <path class="checkmark" [@checkmark] d="M8 12L11 15L16 9" 
-                stroke="currentColor" stroke-width="2.5" 
-                stroke-linecap="round" stroke-linejoin="round"
-                fill="none"/>
+          <circle
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="2"
+          />
+          <path
+            class="checkmark"
+            [@checkmark]
+            d="M8 12L11 15L16 9"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            fill="none"
+          />
         </svg>
       </div>
-      
+
       <div class="success-content">
         <h1 class="success-title">Payment Successful!</h1>
-        <p class="success-message">Your flight has been booked successfully. Get ready for takeoff!</p>
-        
+        <p class="success-message">
+          Your flight has been booked successfully. Get ready for takeoff!
+        </p>
+
+        <app-ticket
+          [bookingInfo]="bookingInfo"
+          [flightInfo]="flightInfo"
+          [flightInfo]="flightInfo"
+        ></app-ticket>
+
         <div class="confirmation-grid">
           <div class="confirmation-card">
             <div class="conf-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <div class="conf-details">
               <span class="conf-label">Confirmation</span>
-              <span class="conf-value">{{ bookingInfo?.reservationId || reservationId }}</span>
+              <span class="conf-value">{{
+                bookingInfo?.reservationId || reservationId
+              }}</span>
             </div>
           </div>
-          
+
           <div class="confirmation-card">
             <div class="conf-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 17.9319 20.6839 18.8262 20.1213 19.4888C19.5587 20.1514 18.7956 20.5 18 20.5H6C5.20435 20.5 4.44129 20.1514 3.87868 19.4888C3.31607 18.8262 3 17.9319 3 17V8.5C3 7.56812 3.31607 6.67374 3.87868 6.01118C4.44129 5.34862 5.20435 5 6 5H18C18.7956 5 19.5587 5.34862 20.1213 6.01118C20.6839 6.67374 21 7.56812 21 8.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 2V5M16 2V5M3.5 9.09H20.5M21 8.5V17C21 17.9319 20.6839 18.8262 20.1213 19.4888C19.5587 20.1514 18.7956 20.5 18 20.5H6C5.20435 20.5 4.44129 20.1514 3.87868 19.4888C3.31607 18.8262 3 17.9319 3 17V8.5C3 7.56812 3.31607 6.67374 3.87868 6.01118C4.44129 5.34862 5.20435 5 6 5H18C18.7956 5 19.5587 5.34862 20.1213 6.01118C20.6839 6.67374 21 7.56812 21 8.5Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
             <div class="conf-details">
@@ -74,19 +121,27 @@
         <h2>Your Boarding Pass</h2>
         <div class="header-line"></div>
       </div>
-      
-      <div class="ticket-wrapper" *ngIf="!isLoading && bookingInfo && flightInfo">
-        <app-ticket 
-          [bookingInfo]="bookingInfo" 
-          [flightInfo]="flightInfo">
+
+      <div
+        class="ticket-wrapper"
+        *ngIf="!isLoading && bookingInfo && flightInfo"
+      >
+        <app-ticket [bookingInfo]="bookingInfo" [flightInfo]="flightInfo">
         </app-ticket>
       </div>
 
       <div class="ticket-loading" *ngIf="isLoading">
         <div class="loading-animation">
           <div class="plane-loader">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 16V8C21 7.45 20.55 7 20 7H15L12 4H8C7.45 4 7 4.45 7 5V7H4C3.45 7 3 7.45 3 8V16C3 16.55 3.45 17 4 17H20C20.55 17 21 16.55 21 16Z" fill="currentColor"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 16V8C21 7.45 20.55 7 20 7H15L12 4H8C7.45 4 7 4.45 7 5V7H4C3.45 7 3 7.45 3 8V16C3 16.55 3.45 17 4 17H20C20.55 17 21 16.55 21 16Z"
+                fill="currentColor"
+              />
             </svg>
           </div>
           <p>Preparing your boarding pass...</p>
@@ -100,42 +155,78 @@
         <h2>Quick Actions</h2>
         <div class="header-line"></div>
       </div>
-      
+
       <div class="actions-grid">
-        <button class="action-btn action-item primary" 
-                (click)="printTicket()" 
-                [@buttonHover]
-                (mouseenter)="onButtonHover($event, true)"
-                (mouseleave)="onButtonLeave($event, false)">
+        <button
+          class="action-btn action-item primary"
+          (click)="printTicket()"
+          [@buttonHover]
+          (mouseenter)="onButtonHover($event, true)"
+          (mouseleave)="onButtonLeave($event, false)"
+        >
           <div class="btn-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 9V2H18V9M6 18H4C2.9 18 2 17.1 2 16V11C2 9.9 2.9 9 4 9H20C21.1 9 22 9.9 22 11V16C22 17.1 21.1 18 20 18H18M18 14H6V22H18V14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M6 9V2H18V9M6 18H4C2.9 18 2 17.1 2 16V11C2 9.9 2.9 9 4 9H20C21.1 9 22 9.9 22 11V16C22 17.1 21.1 18 20 18H18M18 14H6V22H18V14Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <span>Print Ticket</span>
         </button>
-        
-        <button class="action-btn action-item secondary" 
-                (click)="emailTicket()"
-                [@buttonHover]
-                (mouseenter)="onButtonHover($event, true)"
-                (mouseleave)="onButtonLeave($event, false)">
+
+        <button
+          class="action-btn action-item secondary"
+          (click)="emailTicket()"
+          [@buttonHover]
+          (mouseenter)="onButtonHover($event, true)"
+          (mouseleave)="onButtonLeave($event, false)"
+        >
           <div class="btn-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4ZM22 6L12 13L2 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4ZM22 6L12 13L2 6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <span>Email Ticket</span>
         </button>
-        
-        <button class="action-btn action-item secondary" 
-                (click)="downloadTicket()"
-                [@buttonHover]
-                (mouseenter)="onButtonHover($event, true)"
-                (mouseleave)="onButtonLeave($event, false)">
+
+        <button
+          class="action-btn action-item secondary"
+          (click)="downloadTicket()"
+          [@buttonHover]
+          (mouseenter)="onButtonHover($event, true)"
+          (mouseleave)="onButtonLeave($event, false)"
+        >
           <div class="btn-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15M7 10L12 15L17 10M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 15V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V15M7 10L12 15L17 10M12 15V3"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <span>Download PDF</span>
@@ -149,12 +240,22 @@
         <h2>What's Next?</h2>
         <div class="header-line"></div>
       </div>
-      
+
       <div class="steps-grid">
         <div class="step-card" (click)="onCheckIn()">
           <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 8V12L15 15M21 12C21 17 12 23 12 23S3 17 3 12C3 5.372 7.372 1 12 1S21 5.372 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 8V12L15 15M21 12C21 17 12 23 12 23S3 17 3 12C3 5.372 7.372 1 12 1S21 5.372 21 12Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div class="step-content">
@@ -163,11 +264,21 @@
             <div class="step-badge">Coming Soon</div>
           </div>
         </div>
-        
+
         <div class="step-card" (click)="onManageBooking()">
           <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2L15.09 8.26L22 9L17 14L18.18 21L12 17.77L5.82 21L7 14L2 9L8.91 8.26L12 2Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div class="step-content">
@@ -176,11 +287,21 @@
             <div class="step-badge available">Available</div>
           </div>
         </div>
-        
+
         <div class="step-card" (click)="onTrackFlight()">
           <div class="step-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M21 8L18.6 21.4C18.4 22.2 17.7 22.8 16.9 22.8C16.3 22.8 15.8 22.4 15.6 21.8L14.5 18.5L11 15L7.5 14.5L4.2 13.4C3.6 13.2 3.2 12.7 3.2 12.1C3.2 11.3 3.8 10.6 4.6 10.4L18 8H21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M21 8L18.6 21.4C18.4 22.2 17.7 22.8 16.9 22.8C16.3 22.8 15.8 22.4 15.6 21.8L14.5 18.5L11 15L7.5 14.5L4.2 13.4C3.6 13.2 3.2 12.7 3.2 12.1C3.2 11.3 3.8 10.6 4.6 10.4L18 8H21Z"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
             </svg>
           </div>
           <div class="step-content">
@@ -196,9 +317,25 @@
     <div class="support-section">
       <div class="support-card" (click)="onContactSupport()">
         <div class="support-icon">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M22 12C22 17.5228 17.5228 22 12 22C10.1786 22 8.47087 21.513 7.02279 20.6622L2 22L3.33781 16.9772C2.48697 15.5291 2 13.8214 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M8 12H8.01M12 12H12.01M16 12H16.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M22 12C22 17.5228 17.5228 22 12 22C10.1786 22 8.47087 21.513 7.02279 20.6622L2 22L3.33781 16.9772C2.48697 15.5291 2 13.8214 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M8 12H8.01M12 12H12.01M16 12H16.01"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
         <div class="support-content">
@@ -206,8 +343,18 @@
           <p>Our 24/7 support team is here to assist you</p>
         </div>
         <div class="support-arrow">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 18L15 12L9 6"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </div>
       </div>
