@@ -9,6 +9,8 @@ interface BarcodeLine {
 
 @Component({
   selector: "app-ticket",
+  standalone: true,
+
   imports: [CommonModule],
   templateUrl: "./ticket.component.html",
   styleUrls: ["./ticket.component.css"],

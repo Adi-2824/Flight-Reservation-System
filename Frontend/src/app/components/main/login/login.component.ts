@@ -14,6 +14,7 @@ declare const grecaptcha:any;
 
 @Component({
   selector: "app-login",
+  standalone: true,
   imports: [ReactiveFormsModule, RouterLink, CommonModule,RecaptchaModule],
   templateUrl: "./login.component.html",
   styleUrl: "./login.component.css",

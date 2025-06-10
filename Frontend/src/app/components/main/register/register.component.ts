@@ -10,6 +10,7 @@ interface FormErrors {
 
 @Component({
   selector: "app-register",
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule],
   templateUrl: "./register.component.html",
   styleUrl: "./register.component.css",

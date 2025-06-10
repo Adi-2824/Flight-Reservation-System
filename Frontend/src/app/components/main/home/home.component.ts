@@ -1,511 +1,527 @@
-import { Component, inject, type OnInit, type OnDestroy } from "@angular/core"
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
-import { Router } from "@angular/router"
-import { CommonModule, DatePipe } from "@angular/common"
-import { FormsModule } from "@angular/forms"
-import { FlightsService } from "../../../services/flights.service"
-import Swal from "sweetalert2"
-import { Subject, takeUntil, debounceTime, distinctUntilChanged } from "rxjs"
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FlightsService } from '../../../services/flights.service';
+import Swal from 'sweetalert2';
+import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 
+// Interfaces
 interface Particle {
-  x: number
-  delay: number
+  x: number;
+  delay: number;
 }
 
 interface Feature {
-  number: string
-  title: string
-  description: string
-  icon: string
+  icon: string;
+  title: string;
+  description: string;
 }
 
-interface Service {
-  icon: string
-  title: string
-  description: string
+interface Flight {
+  id?: string;
+  flightNumber: string;
+  airline: {
+    airlineCode: string;
+  };
+  departureAirport: string;
+  arrivalAirport: string;
+  departureTime: string;
+  arrivalTime: string;
+  duration: string;
+  ticketPrice: number;
+  origin?: string;
+  destination?: string;
 }
 
 @Component({
-  selector: "app-home",
+  selector: 'app-home',
   standalone: true,
   providers: [DatePipe],
   imports: [ReactiveFormsModule, CommonModule, FormsModule],
-  templateUrl: "./home.component.html",
-  styleUrl: "./home.component.css",
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>()
+  private destroy$ = new Subject<void>();
+  private flightService = inject(FlightsService);
 
-  // Form and data properties
+  // Form Configuration
   searchForm: FormGroup = new FormGroup({
     departureCity: new FormControl('', [Validators.required]),
     arrivalCity: new FormControl('', [Validators.required]),
-    departureTime: new FormControl('', [Validators.required])
-  })
-  flights: any[] = []
-  allOrigins: string[] = []
-  filteredOrigins: string[] = []
-  allDestinations: string[] = []
-  filteredDestinations: string[] = []
+    departureTime: new FormControl('', [Validators.required]),
+    returnTime: new FormControl(''),
+    seatClass: new FormControl('economy', [Validators.required])
+  });
 
-  // UI state properties
-  selectedClass = "economy"
-  focusedField: string | null = null
-  isSearching = false
-  passengerCount = 1
-  minDate = ""
-  newsletterEmail = ""
+  // Data Properties
+  flights: Flight[] = [];
+  allOrigins: string[] = [];
+  allDestinations: string[] = [];
+  filteredOrigins: string[] = [];
+  filteredDestinations: string[] = [];
 
-  // Animation and visual properties
-  particles: Particle[] = []
+  // UI State
+  isRoundTrip = false;
+  selectedClass = 'economy';
+  focusedField: string | null = null;
+  isSearching = false;
+  passengerCount = 1;
+  minDate = '';
+  newsletterEmail = '';
 
-  // Static data
+  // Animation Properties
+  particles: Particle[] = [];
+
+  // Static Data
   features: Feature[] = [
     {
-      number: "01",
-      title: "Travel Requirements for Dubai",
-      description:
-        "Stay informed and prepared for your trip to Dubai with essential travel requirements, ensuring a smooth and hassle-free experience in this vibrant and captivating city.",
-      icon: "fas fa-passport",
+      icon: 'fas fa-shield-alt',
+      title: 'Secure Booking',
+      description: 'Your transactions are protected with bank-level security and encryption for complete peace of mind.'
     },
     {
-      number: "02",
-      title: "Multi-risk travel insurance",
-      description:
-        "Comprehensive protection for your peace of mind, covering a range of potential travel risks and unexpected situations.",
-      icon: "fas fa-shield-alt",
+      icon: 'fas fa-clock',
+      title: '24/7 Support',
+      description: 'Round-the-clock customer support to assist you with any queries or travel emergencies.'
     },
     {
-      number: "03",
-      title: "Travel Requirements by destinations",
-      description:
-        "Stay informed and plan your trip with ease, as we provide up-to-date information on travel requirements specific to your desired destinations.",
-      icon: "fas fa-globe-americas",
+      icon: 'fas fa-tags',
+      title: 'Best Prices',
+      description: 'Compare prices from hundreds of airlines to find the best deals for your journey.'
     },
-  ]
+    {
+      icon: 'fas fa-mobile-alt',
+      title: 'Mobile Booking',
+      description: 'Book flights on-the-go with our mobile-optimized platform and instant confirmations.'
+    },
+    {
+      icon: 'fas fa-gift',
+      title: 'Loyalty Rewards',
+      description: 'Earn points with every booking and redeem them for discounts on future travels.'
+    },
+    {
+      icon: 'fas fa-globe',
+      title: 'Worldwide Coverage',
+      description: 'Access to 500+ destinations worldwide with partnerships with major airlines globally.'
+    }
+  ];
 
-  services: Service[] = [
-    {
-      icon: "ri-calendar-2-line",
-      title: "Book & relax",
-      description:
-        'With "Book and Relax," you can sit back, unwind, and enjoy the journey while we take care of everything else.',
-    },
-    {
-      icon: "ri-shield-check-line",
-      title: "Smart Checklist",
-      description:
-        "Introducing Smart Checklist with us, the innovative solution revolutionizing the way you travel with our airline.",
-    },
-    {
-      icon: "ri-bookmark-2-line",
-      title: "Save More",
-      description:
-        "From discounted ticket prices to exclusive promotions and deals, we prioritize affordability without compromising on quality.",
-    },
-  ]
-
-  flightService = inject(FlightsService)
-
-  constructor(
-    private router: Router,
-    private datePipe: DatePipe,
-  ) {
-    this.setMinDate()
-    this.generateParticles()
+  constructor(private router: Router, private datePipe: DatePipe) {
+    this.initializeComponent();
   }
 
-  ngOnInit() {
-    this.loadFlightData()
-    this.setupFormListeners()
-    this.startAnimations()
+  ngOnInit(): void {
+    this.loadFlightData();
+    this.setupFormListeners();
+    this.generateParticles();
   }
 
-  ngOnDestroy() {
-    this.destroy$.next()
-    this.destroy$.complete()
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  private setMinDate() {
-    const today = new Date()
-    this.minDate = today.toISOString().split("T")[0]
+  // Initialization Methods
+  private initializeComponent(): void {
+    this.setMinDate();
+    this.setupInitialFormState();
   }
 
-  private generateParticles() {
-    this.particles = Array.from({ length: 20 }, () => ({
+  private setMinDate(): void {
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0];
+  }
+
+  private setupInitialFormState(): void {
+    // Set default values
+    this.searchForm.patchValue({
+      seatClass: 'economy'
+    });
+  }
+
+  private generateParticles(): void {
+    this.particles = Array.from({ length: 25 }, () => ({
       x: Math.random() * 100,
-      delay: Math.random() * 8,
-    }))
+      delay: Math.random() * 8
+    }));
   }
 
-  private loadFlightData() {
-    this.flightService
-      .getFlights()
+  // Data Loading
+  private loadFlightData(): void {
+    this.flightService.getFlights()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (flights: any[]) => {
-          this.allOrigins = [...new Set(flights.map((flight) => flight.origin))]
-          this.allDestinations = [...new Set(flights.map((flight) => flight.destination))]
-          console.log("All Origins:", this.allOrigins)
+        next: (flights: Flight[]) => {
+          this.processFlightData(flights);
         },
         error: (error) => {
-          console.error("Error loading flight data:", error)
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Failed to load flight data. Please try again later.",
-          })
-        },
-      })
+          console.error('Error loading flight data:', error);
+          this.showErrorMessage('Failed to load flight data. Please try again later.');
+        }
+      });
   }
 
-  private setupFormListeners() {
-    // Departure city autocomplete
-    this.searchForm
-      .get("departureCity")
-      ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value && value.length > 0) {
-          this.filteredOrigins = this.allOrigins
-            .filter((origin) => origin.toLowerCase().includes(value.toLowerCase()))
-            .slice(0, 5) // Limit to 5 results
-        } else {
-          this.filteredOrigins = []
-        }
-      })
-
-    // Arrival city autocomplete
-    this.searchForm
-      .get("arrivalCity")
-      ?.valueChanges.pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value && value.length > 0) {
-          this.filteredDestinations = this.allDestinations
-            .filter((destination) => destination.toLowerCase().includes(value.toLowerCase()))
-            .slice(0, 5) // Limit to 5 results
-        } else {
-          this.filteredDestinations = []
-        }
-      })
+  private processFlightData(flights: Flight[]): void {
+    this.allOrigins = [...new Set(flights.map(flight => flight.origin || flight.departureAirport))];
+    this.allDestinations = [...new Set(flights.map(flight => flight.destination || flight.arrivalAirport))];
+    
+    // Sort alphabetically for better UX
+    this.allOrigins.sort();
+    this.allDestinations.sort();
   }
 
-  private startAnimations() {
-    // Add any additional animation initialization here
-    console.log("Animations started")
+  // Form Listeners
+  private setupFormListeners(): void {
+    this.setupDepartureCityListener();
+    this.setupArrivalCityListener();
+    this.setupTripTypeListener();
+  }
+
+  private setupDepartureCityListener(): void {
+    this.searchForm.get('departureCity')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(value => {
+        this.filteredOrigins = this.filterCities(value, this.allOrigins);
+      });
+  }
+
+  private setupArrivalCityListener(): void {
+    this.searchForm.get('arrivalCity')?.valueChanges
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(value => {
+        this.filteredDestinations = this.filterCities(value, this.allDestinations);
+      });
+  }
+
+  private setupTripTypeListener(): void {
+    // Monitor round trip changes through the component property
+    // This will be handled by the setTripType method
+  }
+
+  private filterCities(searchValue: string, cities: string[]): string[] {
+    if (!searchValue || searchValue.length < 1) {
+      return [];
+    }
+    
+    return cities
+      .filter(city => city.toLowerCase().includes(searchValue.toLowerCase()))
+      .slice(0, 6); // Limit results for better performance
   }
 
   // UI Event Handlers
-  selectClass(className: string) {
-    this.selectedClass = className
-    // Add haptic feedback or sound effect here if needed
+  setTripType(isRoundTrip: boolean): void {
+    this.isRoundTrip = isRoundTrip;
+    
+    if (isRoundTrip) {
+      this.searchForm.get('returnTime')?.setValidators([Validators.required]);
+    } else {
+      this.searchForm.get('returnTime')?.clearValidators();
+      this.searchForm.get('returnTime')?.setValue('');
+    }
+    
+    this.searchForm.get('returnTime')?.updateValueAndValidity();
   }
 
-  onFieldFocus(field: string) {
-    this.focusedField = field
+  onFieldFocus(field: string): void {
+    this.focusedField = field;
   }
 
-  onFieldBlur(field: string) {
+  onFieldBlur(field: string): void {
     // Delay hiding dropdown to allow for click events
     setTimeout(() => {
       if (this.focusedField === field) {
-        this.focusedField = null
+        this.focusedField = null;
       }
-    }, 200)
+    }, 200);
   }
 
-  selectOrigin(origin: string) {
-    this.searchForm.get("departureCity")?.setValue(origin)
-    this.filteredOrigins = []
-    this.focusedField = null
-
-    // Add smooth animation feedback
-    this.showSelectionFeedback("Departure city selected")
+  selectOrigin(origin: string): void {
+    this.searchForm.get('departureCity')?.setValue(origin);
+    this.filteredOrigins = [];
+    this.focusedField = null;
+    this.showSelectionFeedback(`Selected ${origin} as departure city`);
   }
 
-  selectDestination(destination: string) {
-    this.searchForm.get("arrivalCity")?.setValue(destination)
-    this.filteredDestinations = []
-    this.focusedField = null
-
-    // Add smooth animation feedback
-    this.showSelectionFeedback("Destination selected")
+  selectDestination(destination: string): void {
+    this.searchForm.get('arrivalCity')?.setValue(destination);
+    this.filteredDestinations = [];
+    this.focusedField = null;
+    this.showSelectionFeedback(`Selected ${destination} as destination`);
   }
 
-  swapCities() {
-    const departureValue = this.searchForm.get("departureCity")?.value
-    const arrivalValue = this.searchForm.get("arrivalCity")?.value
+  swapCities(): void {
+    const currentDeparture = this.searchForm.get('departureCity')?.value;
+    const currentArrival = this.searchForm.get('arrivalCity')?.value;
 
-    this.searchForm.get("departureCity")?.setValue(arrivalValue)
-    this.searchForm.get("arrivalCity")?.setValue(departureValue)
+    this.searchForm.patchValue({
+      departureCity: currentArrival,
+      arrivalCity: currentDeparture
+    });
 
-    // Add visual feedback for swap action
-    this.showSelectionFeedback("Cities swapped")
+    this.showSelectionFeedback('Cities swapped successfully');
   }
 
-  increasePassengers() {
+  increasePassengers(): void {
     if (this.passengerCount < 9) {
-      this.passengerCount++
+      this.passengerCount++;
     }
   }
 
-  decreasePassengers() {
+  decreasePassengers(): void {
     if (this.passengerCount > 1) {
-      this.passengerCount--
+      this.passengerCount--;
     }
   }
 
-  private showSelectionFeedback(message: string) {
-    // You can implement a toast notification or subtle animation here
-    console.log(message)
-  }
-
-  onSubmit() {
+  // Form Submission
+  onSubmit(): void {
     if (this.searchForm.invalid) {
-      this.markFormGroupTouched()
-      Swal.fire({
-        icon: "warning",
-        title: "Incomplete Form",
-        text: "Please fill in all required fields",
-        confirmButtonColor: "#667eea",
-      })
-      return
+      this.handleInvalidForm();
+      return;
     }
 
-    this.isSearching = true
-    const formData = this.searchForm.value
-    formData.departureTime = this.datePipe.transform(formData.departureTime, "yyyy-MM-dd") || ""
-    formData.seatClass = this.selectedClass
-    formData.passengers = this.passengerCount
+    if (!this.validateDates()) {
+      return;
+    }
+
+    this.performSearch();
+  }
+
+  private handleInvalidForm(): void {
+    this.markFormGroupTouched();
+    
+    const missingFields = this.getMissingRequiredFields();
+    const errorMessage = `Please fill in the following required fields: ${missingFields.join(', ')}`;
+    
+    Swal.fire({
+      icon: 'warning',
+      title: 'Incomplete Form',
+      text: errorMessage,
+      confirmButtonColor: '#667eea',
+      confirmButtonText: 'OK'
+    });
+  }
+
+  private getMissingRequiredFields(): string[] {
+    const missingFields: string[] = [];
+    const controls = this.searchForm.controls;
+
+    if (controls['departureCity'].invalid) missingFields.push('Departure City');
+    if (controls['arrivalCity'].invalid) missingFields.push('Destination City');
+    if (controls['departureTime'].invalid) missingFields.push('Departure Date');
+    if (this.isRoundTrip && controls['returnTime'].invalid) missingFields.push('Return Date');
+
+    return missingFields;
+  }
+
+  private validateDates(): boolean {
+    const departureDate = new Date(this.searchForm.get('departureTime')?.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (departureDate < today) {
+      this.showErrorMessage('Departure date cannot be in the past');
+      return false;
+    }
+
+    if (this.isRoundTrip) {
+      const returnDate = new Date(this.searchForm.get('returnTime')?.value);
+      if (returnDate <= departureDate) {
+        this.showErrorMessage('Return date must be after departure date');
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private performSearch(): void {
+    this.isSearching = true;
+    const formData = this.prepareSearchData();
 
     // Simulate search delay for better UX
     setTimeout(() => {
-      this.router.navigate(["/search"], {
-        queryParams: {
-          origin: formData.departureCity,
-          destination: formData.arrivalCity,
-          DepartureDate: formData.departureTime,
-          seatClass: formData.seatClass,
-          passengers: formData.passengers,
-        },
-      })
-      this.isSearching = false
-    }, 1500)
+      this.navigateToResults(formData);
+      this.isSearching = false;
+    }, 1200);
   }
 
-  private markFormGroupTouched() {
-    Object.keys(this.searchForm.controls).forEach((key) => {
-      const control = this.searchForm.get(key)
-      control?.markAsTouched()
-    })
+  private prepareSearchData(): any {
+    const formValue = this.searchForm.value;
+    
+    return {
+      origin: formValue.departureCity,
+      destination: formValue.arrivalCity,
+      departureDate: this.datePipe.transform(formValue.departureTime, 'yyyy-MM-dd'),
+      returnDate: this.isRoundTrip ? this.datePipe.transform(formValue.returnTime, 'yyyy-MM-dd') : null,
+      passengers: this.passengerCount,
+      seatClass: formValue.seatClass,
+      isRoundTrip: this.isRoundTrip
+    };
   }
 
-  bookFlight(flight: any) {
+  private navigateToResults(searchData: any): void {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        origin: searchData.origin,
+        destination: searchData.destination,
+        DepartureDate: searchData.departureDate,
+        ReturnDate: searchData.returnDate,
+        passengers: searchData.passengers,
+        seatClass: searchData.seatClass,
+        isRoundTrip: searchData.isRoundTrip
+      }
+    });
+  }
+
+  private markFormGroupTouched(): void {
+    Object.keys(this.searchForm.controls).forEach(key => {
+      const control = this.searchForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  // Flight Booking
+  bookFlight(flight: Flight): void {
     Swal.fire({
-      icon: "success",
-      title: "Flight Selected!",
-      text: `You selected flight ${flight.airline.airlineCode}-${flight.flightNumber}`,
-      confirmButtonColor: "#667eea",
-      confirmButtonText: "Proceed to Booking",
+      icon: 'success',
+      title: 'Flight Selected!',
+      text: `You selected flight ${flight.airline.airlineCode}-${flight.flightNumber} for ₹${flight.ticketPrice}`,
+      confirmButtonColor: '#667eea',
+      confirmButtonText: 'Proceed to Booking',
+      showCancelButton: true,
+      cancelButtonText: 'Continue Searching'
     }).then((result) => {
       if (result.isConfirmed) {
-        // Navigate to booking page with flight details
-        this.router.navigate(["/booking"], {
-          queryParams: {
-            flightId: flight.id,
-            passengers: this.passengerCount,
-            seatClass: this.selectedClass,
-          },
-        })
+        this.proceedToBooking(flight);
       }
-    })
+    });
   }
 
-  subscribeNewsletter() {
-    if (!this.newsletterEmail || !this.isValidEmail(this.newsletterEmail)) {
-      Swal.fire({
-        icon: "warning",
-        title: "Invalid Email",
-        text: "Please enter a valid email address",
-        confirmButtonColor: "#667eea",
-      })
-      return
+  private proceedToBooking(flight: Flight): void {
+    this.router.navigate(['/booking'], {
+      queryParams: {
+        flightId: flight.id,
+        passengers: this.passengerCount,
+        seatClass: this.selectedClass,
+        price: flight.ticketPrice
+      }
+    });
+  }
+
+  // Newsletter Subscription
+  subscribeNewsletter(): void {
+    if (!this.isValidEmail(this.newsletterEmail)) {
+      this.showErrorMessage('Please enter a valid email address');
+      return;
     }
 
-    // Simulate newsletter subscription
-    Swal.fire({
-      icon: "success",
-      title: "Subscribed!",
-      text: "Thank you for subscribing to our newsletter",
-      confirmButtonColor: "#667eea",
-    })
-
-    this.newsletterEmail = ""
+    // Simulate API call
+    this.simulateNewsletterSubscription();
   }
 
+  private simulateNewsletterSubscription(): void {
+    const loadingSwal = Swal.fire({
+      title: 'Subscribing...',
+      text: 'Please wait while we process your subscription',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    setTimeout(() => {
+      // loadingSwal.close();
+      Swal.fire({
+        icon: 'success',
+        title: 'Successfully Subscribed!',
+        text: 'Thank you for subscribing to our newsletter. You\'ll receive the latest deals and travel tips.',
+        confirmButtonColor: '#667eea',
+        timer: 3000,
+        timerProgressBar: true
+      });
+      
+      this.newsletterEmail = '';
+    }, 1500);
+  }
+
+  // Utility Methods
   private isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
+    if (!email) return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
-  // Utility methods for template
+  private showSelectionFeedback(message: string): void {
+    // You can implement a toast notification here
+    console.log(message);
+    
+    // Optional: Show a subtle toast notification
+    const toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true
+    });
+
+    toast.fire({
+      icon: 'success',
+      title: message
+    });
+  }
+
+  private showErrorMessage(message: string): void {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops!',
+      text: message,
+      confirmButtonColor: '#667eea'
+    });
+  }
+
+  // Template Helper Methods
   trackByIndex(index: number, item: any): number {
-    return index
+    return index;
   }
 
-  // Animation trigger methods
-  onMouseEnter(element: any) {
-    // Add hover animations
+  // Animation Event Handlers (optional)
+  onMouseEnter(element: any): void {
+    // Add hover animations if needed
   }
 
-  onMouseLeave(element: any) {
-    // Remove hover animations
+  onMouseLeave(element: any): void {
+    // Remove hover animations if needed
+  }
+
+  // Accessibility Methods
+  onKeyDown(event: KeyboardEvent, action: () => void): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      action();
+    }
+  }
+
+  // Performance Optimization
+  private debounce<T extends (...args: any[]) => any>(
+    func: T,
+    delay: number
+  ): (...args: Parameters<T>) => void {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    
+    return (...args: Parameters<T>) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(this, args), delay);
+    };
   }
 }
-
-
-
-
-
-
-
-
-
-
-// import { Component, inject, OnInit, OnDestroy } from '@angular/core';
-// import { FormControl, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
-// import { Router } from '@angular/router';
-// import { CommonModule, DatePipe } from '@angular/common';
-// import { FlightsService } from '../../../services/flights.service';
-// import Swal from 'sweetalert2';
-// import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-
-// @Component({
-//   selector: 'app-home',
-//   providers: [DatePipe],
-//   imports: [CommonModule, ReactiveFormsModule, FormsModule], // ✅ Add `CommonModule`
-//   templateUrl: './home.component.html',
-//   styleUrl: './home.component.css',
-// })
-// export class HomeComponent implements OnInit, OnDestroy {
-//   private destroy$ = new Subject<void>();
-
-//   searchForm: FormGroup = new FormGroup({
-//     seatClass: new FormControl('One Way Trip'),
-//     departureCity: new FormControl('', Validators.required),
-//     arrivalCity: new FormControl('', Validators.required),
-//     departureTime: new FormControl('', Validators.required),
-//     returnTime: new FormControl({ value: '', disabled: true }),
-//   });
-
-//   flights: any[] = [];
-//   filteredOrigins: string[] = [];
-//   filteredDestinations: string[] = [];
-//   allOrigins: string[] = [];
-//   allDestinations: string[] = [];
-//   newsletterEmail: string = '';
-//   isRoundTrip = false;
-//   minDate = '';
-
-//   flightService = inject(FlightsService);
-
-//   constructor(private router: Router, private datePipe: DatePipe) {
-//     this.setMinDate();
-//   }
-
-//   ngOnInit() {
-//     this.loadFlightData();
-//     this.setupFormListeners();
-//   }
-
-//   ngOnDestroy() {
-//     this.destroy$.next();
-//     this.destroy$.complete();
-//   }
-
-//   private setMinDate() {
-//     const today = new Date();
-//     this.minDate = today.toISOString().split('T')[0];
-//   }
-
-//   private loadFlightData() {
-//     this.flightService.getFlights().pipe(takeUntil(this.destroy$)).subscribe({
-//       next: (flights: any[]) => {
-//         this.allOrigins = [...new Set(flights.map((flight) => flight.origin))];
-//         this.allDestinations = [...new Set(flights.map((flight) => flight.destination))];
-//       },
-//       error: () => {
-//         Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to load flight data.' });
-//       },
-//     });
-//   }
-
-//   private setupFormListeners() {
-//     this.searchForm.get('departureCity')?.valueChanges.pipe(
-//       debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$)
-//     ).subscribe((value) => {
-//       this.filteredOrigins = this.allOrigins.filter((origin) => origin.toLowerCase().includes(value.toLowerCase())).slice(0, 5);
-//     });
-
-//     this.searchForm.get('arrivalCity')?.valueChanges.pipe(
-//       debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$)
-//     ).subscribe((value) => {
-//       this.filteredDestinations = this.allDestinations.filter((destination) => destination.toLowerCase().includes(value.toLowerCase())).slice(0, 5);
-//     });
-
-//     this.searchForm.get('seatClass')?.valueChanges.subscribe((value) => {
-//       this.isRoundTrip = value === 'Round Way Trip';
-//       if (this.isRoundTrip) {
-//         this.searchForm.get('returnTime')?.enable();
-//       } else {
-//         this.searchForm.get('returnTime')?.disable();
-//         this.searchForm.patchValue({ returnTime: '' });
-//       }
-//     });
-//   }
-
-//   selectOrigin(origin: string) {
-//     this.searchForm.get('departureCity')?.setValue(origin);
-//     this.filteredOrigins = [];
-//   }
-
-//   selectDestination(destination: string) {
-//     this.searchForm.get('arrivalCity')?.setValue(destination);
-//     this.filteredDestinations = [];
-//   }
-
-//   swapCities() {
-//     const temp = this.searchForm.value.departureCity;
-//     this.searchForm.patchValue({
-//       departureCity: this.searchForm.value.arrivalCity,
-//       arrivalCity: temp,
-//     });
-//   }
-
-//   onSubmit() {
-//     if (this.searchForm.invalid) {
-//       Swal.fire('Please fill in all required fields.');
-//       return;
-//     }
-
-//     const formData = this.searchForm.value;
-//     const today = new Date().toISOString().split('T')[0];
-//     const selectedDate = this.datePipe.transform(formData.departureTime, 'yyyy-MM-dd') || '';
-
-//     if (selectedDate < today) {
-//       Swal.fire('You cannot select a departure date before today.');
-//       return;
-//     }
-
-//     formData.returnTime = this.datePipe.transform(formData.returnTime, 'yyyy-MM-dd');
-
-//     this.router.navigate(['/search'], {
-//       queryParams: {
-//         origin: formData.departureCity,
-//         destination: formData.arrivalCity,
-//         DepartureDate: selectedDate,
-//         ReturnDate: this.isRoundTrip ? formData.returnTime : null,
-//         isRoundTrip: this.isRoundTrip,
-//       },
-//     });
-//   }
-// }

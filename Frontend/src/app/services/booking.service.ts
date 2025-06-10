@@ -9,7 +9,7 @@ export class BookingService {
   private API_URL = 'https://localhost:7035/api/Reservations';
   constructor(private http: HttpClient) { }
 
-  getBookingInformation(flightId:number){
+  getBookingInformation(flightId:any){
      const token = localStorage.getItem("token");
      const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
@@ -77,6 +77,11 @@ export class BookingService {
   });
 
   return this.http.put(`${this.API_URL}/CleanupExpiredReservations/CleanupExpired`,{ headers });
+}
+
+sendEmail(emailData: any): Observable<any> {
+    const headers ={'Content-Type':'application/json'};
+  return this.http.post(`https://localhost:7035/api/email/send`, emailData,{headers});
 }
 
 cancelReservation(reservationId: number): Observable<any> {

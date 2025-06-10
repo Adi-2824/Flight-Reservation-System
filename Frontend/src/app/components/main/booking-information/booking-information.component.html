@@ -1,17 +1,17 @@
+<!-- booking-information.component.html -->
 <div class="booking-info-container">
   <!-- Enhanced Header Section -->
   <div class="booking-header">
     <div class="header-background">
       <div class="animated-gradient"></div>
-      <div class="floating-elements">
-        <div class="element element-1"></div>
-        <div class="element element-2"></div>
-        <div class="element element-3"></div>
+      <div class="floating-particles">
+        <div class="particle" *ngFor="let p of [1,2,3,4,5,6,7,8]; let i = index" 
+             [style.animation-delay.s]="i * 0.3"></div>
       </div>
     </div>
     
     <div class="header-content">
-      <div class="breadcrumb">
+      <div class="breadcrumb" [@slideInLeft]>
         <span class="breadcrumb-item" (click)="goBack()">
           <i class="fas fa-history"></i>
           Booking History
@@ -20,7 +20,7 @@
         <span class="breadcrumb-item active">Booking Details</span>
       </div>
       
-      <h1 class="page-title">
+      <h1 class="page-title" [@slideInDown]>
         <span class="title-icon">
           <i class="fas fa-ticket-alt"></i>
         </span>
@@ -30,32 +30,34 @@
   </div>
 
   <!-- Loading State -->
-  <div class="loading-container" *ngIf="!bookingData">
+  <div class="loading-container" *ngIf="isLoading" [@fadeIn]>
     <div class="loading-content">
       <div class="loading-animation">
         <div class="ticket-loading">
           <div class="ticket-shape">
-            <div class="ticket-hole ticket-hole-1"></div>
-            <div class="ticket-hole ticket-hole-2"></div>
-            <div class="ticket-hole ticket-hole-3"></div>
+            <div class="ticket-perforation">
+              <div class="perf-hole" *ngFor="let hole of [1,2,3,4,5,6,7,8,9,10]"></div>
+            </div>
           </div>
-        </div>
-        <div class="loading-dots">
-          <span></span>
-          <span></span>
-          <span></span>
+          <div class="loading-shimmer"></div>
         </div>
       </div>
       <h3 class="loading-title">Loading your booking details...</h3>
       <p class="loading-subtitle">Please wait while we fetch your information</p>
+      <div class="loading-progress">
+        <div class="progress-bar"></div>
+      </div>
     </div>
   </div>
 
   <!-- Main Content -->
-  <div class="booking-content" *ngIf="bookingData">
+  <div class="booking-content" *ngIf="!isLoading && bookingData" [@staggerIn]>
     
     <!-- Status Banner -->
-    <div class="status-banner" [class]="getStatusClass(bookingData.status)">
+    <div class="status-banner" 
+         [class]="getStatusClass(bookingData.status)"
+         [@slideInRight]>
+      <div class="status-glow"></div>
       <div class="status-icon">
         <i [class]="getStatusIcon(bookingData.status)"></i>
       </div>
@@ -65,7 +67,9 @@
       </div>
       
       <!-- Countdown Timer for Pending Bookings -->
-      <div class="countdown-container" *ngIf="bookingData.status === 0 && bookingData.expiresAt">
+      <div class="countdown-container" 
+           *ngIf="bookingData.status === 0 && bookingData.expiresAt"
+           [@pulseAnimation]>
         <div class="countdown-label">Expires in:</div>
         <div class="countdown-timer">
           <div class="countdown-segment">
@@ -82,21 +86,30 @@
     </div>
 
     <!-- Booking Reference Card -->
-    <div class="reference-card">
+    <div class="info-card reference-card" [@slideInUp]>
+      <div class="card-glow"></div>
       <div class="reference-header">
         <h4 class="reference-title">
           <i class="fas fa-barcode"></i>
           Booking Reference
         </h4>
-        <button class="copy-btn" (click)="copyReference()" title="Copy Reference">
+        <button class="copy-btn" 
+                (click)="copyReference()" 
+                title="Copy Reference"
+                [@buttonHover]>
           <i class="fas fa-copy"></i>
+          <span class="copy-tooltip">Copy</span>
         </button>
       </div>
-      <div class="reference-code">{{ bookingData.bookingReference }}</div>
+      <div class="reference-code">
+        <span class="reference-text">{{ bookingData.bookingReference }}</span>
+        <div class="reference-underline"></div>
+      </div>
     </div>
 
     <!-- Flight Information Card -->
-    <div class="info-card flight-card">
+    <div class="info-card flight-card" [@slideInUp]>
+      <div class="card-glow"></div>
       <div class="card-header">
         <h4 class="card-title">
           <i class="fas fa-plane"></i>
@@ -144,7 +157,8 @@
     </div>
 
     <!-- Passengers Information Card -->
-    <div class="info-card passengers-card">
+    <div class="info-card passengers-card" [@slideInUp]>
+      <div class="card-glow"></div>
       <div class="card-header">
         <h4 class="card-title">
           <i class="fas fa-users"></i>
@@ -157,15 +171,18 @@
       </div>
       
       <div class="passengers-list" *ngIf="bookingData.passengers.length > 0">
-        <div class="passenger-item" *ngFor="let passenger of bookingData.passengers; let i = index"
-             [style.animation-delay.ms]="i * 100">
+        <div class="passenger-item" 
+             *ngFor="let passenger of bookingData.passengers; let i = index"
+             [style.animation-delay.ms]="i * 100"
+             [@slideInStaggered]>
           <div class="passenger-avatar">
             <i class="fas fa-user"></i>
           </div>
           <div class="passenger-details">
             <h5 class="passenger-name">{{ passenger.firstName }} {{ passenger.lastName }}</h5>
             <p class="passenger-class">
-              <i class="fas" [class.fa-chair]="passenger.seatClass === 'Economy'" 
+              <i class="fas" 
+                 [class.fa-chair]="passenger.seatClass === 'Economy'" 
                  [class.fa-crown]="passenger.seatClass === 'Business'"></i>
               {{ passenger.seatClass }} Class
             </p>
@@ -184,7 +201,8 @@
     </div>
 
     <!-- Payment Information Card -->
-    <div class="info-card payment-card">
+    <div class="info-card payment-card" [@slideInUp]>
+      <div class="card-glow"></div>
       <div class="card-header">
         <h4 class="card-title">
           <i class="fas fa-credit-card"></i>
@@ -207,6 +225,14 @@
           </div>
         </div>
         
+        <!-- Total Amount -->
+        <div class="amount-info" *ngIf="bookingData.totalAmount">
+          <div class="amount-row">
+            <span class="amount-label">Total Amount:</span>
+            <span class="amount-value">${{ bookingData.totalAmount | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        
         <!-- Refund Information -->
         <div class="refund-info" *ngIf="bookingData.refundAmount && bookingData.refundAmount > 0">
           <div class="refund-badge">
@@ -217,14 +243,43 @@
       </div>
     </div>
 
+    <!-- Booking Details Card -->
+    <div class="info-card booking-details-card" [@slideInUp]>
+      <div class="card-glow"></div>
+      <div class="card-header">
+        <h4 class="card-title">
+          <i class="fas fa-info-circle"></i>
+          Booking Details
+        </h4>
+      </div>
+      
+      <div class="booking-details">
+        <div class="detail-row">
+          <span class="detail-label">Booking Date:</span>
+          <span class="detail-value">{{ bookingData.bookingDate | date:'dd MMM yyyy, hh:mm a' }}</span>
+        </div>
+        
+        <div class="detail-row">
+          <span class="detail-label">Cancellation Policy:</span>
+          <span class="detail-value">{{ getCancellationPolicy() }}</span>
+        </div>
+        
+        <div class="detail-row" *ngIf="bookingData.expiresAt && bookingData.status === 0">
+          <span class="detail-label">Payment Expires:</span>
+          <span class="detail-value">{{ bookingData.expiresAt | date:'dd MMM yyyy, hh:mm a' }}</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Action Buttons -->
-    <div class="action-buttons">
+    <div class="action-buttons" [@slideInUp]>
       
       <!-- Proceed to Payment Button -->
       <button class="action-btn primary-btn" 
               *ngIf="bookingData.status === 0" 
               (click)="proceedToPayment()"
-              [disabled]="isProcessing">
+              [disabled]="isProcessing"
+              [@buttonPulse]>
         <span class="btn-content" *ngIf="!isProcessing">
           <i class="fas fa-credit-card"></i>
           <span>Proceed to Payment</span>
@@ -258,62 +313,74 @@
         <span>Download Ticket</span>
       </button>
       
-      <!-- Share Button -->
-      <button class="action-btn outline-btn" (click)="shareBooking()">
+      <!-- Share Booking Button -->
+      <button class="action-btn tertiary-btn" 
+              (click)="shareBooking()">
         <i class="fas fa-share-alt"></i>
-        <span>Share</span>
+        <span>Share Booking</span>
       </button>
       
-      <!-- Back Button -->
-      <button class="action-btn back-btn" (click)="goBack()">
-        <i class="fas fa-arrow-left"></i>
-        <span>Back to History</span>
+      <!-- Help Button -->
+      <button class="action-btn help-btn" 
+              (click)="openHelp()">
+        <i class="fas fa-question-circle"></i>
+        <span>Need Help?</span>
       </button>
     </div>
 
-    <!-- Additional Information -->
-    <div class="additional-info">
+    <!-- Additional Info Section -->
+    <div class="additional-info" [@slideInUp]>
       <div class="info-grid">
         <div class="info-item">
-          <i class="fas fa-calendar-check"></i>
-          <div class="info-content">
-            <span class="info-label">Booking Date</span>
-            <span class="info-value">{{ bookingData.bookingDate | date:'dd MMM yyyy, hh:mm a' }}</span>
-          </div>
+          <i class="fas fa-phone"></i>
+          <span>24/7 Support</span>
         </div>
-        
-        <div class="info-item" *ngIf="bookingData.totalAmount">
-          <i class="fas fa-dollar-sign"></i>
-          <div class="info-content">
-            <span class="info-label">Total Amount</span>
-            <span class="info-value">${{ bookingData.totalAmount | number:'1.2-2' }}</span>
-          </div>
-        </div>
-        
         <div class="info-item">
           <i class="fas fa-shield-alt"></i>
-          <div class="info-content">
-            <span class="info-label">Cancellation Policy</span>
-            <span class="info-value">{{ getCancellationPolicy() }}</span>
-          </div>
+          <span>Secure Booking</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-clock"></i>
+          <span>Instant Confirmation</span>
+        </div>
+        <div class="info-item">
+          <i class="fas fa-mobile-alt"></i>
+          <span>Mobile Friendly</span>
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- Floating Help Button -->
-  <div class="help-fab" (click)="openHelp()">
-    <i class="fas fa-question"></i>
+  <!-- Error State -->
+  <div class="error-container" *ngIf="!isLoading && !bookingData" [@fadeIn]>
+    <div class="error-content">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <h3 class="error-title">Booking Not Found</h3>
+      <p class="error-message">We couldn't find the booking you're looking for. Please check your booking reference and try again.</p>
+      <button class="action-btn primary-btn" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i>
+        <span>Go Back</span>
+      </button>
+    </div>
   </div>
-</div>
 
-<!-- Success/Error Toast -->
-<div class="toast" [class.show]="showToast" [class]="toastType">
-  <div class="toast-content">
-    <i [class]="toastIcon"></i>
-    <span>{{ toastMessage }}</span>
+  <!-- Toast Notification -->
+  <div class="toast-container" 
+       [class.show]="showToast" 
+       [class]="toastType"
+       [@slideInToast]>
+    <div class="toast-content">
+      <div class="toast-icon">
+        <i [class]="toastIcon"></i>
+      </div>
+      <div class="toast-message">{{ toastMessage }}</div>
+      <button class="toast-close" (click)="hideToast()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="toast-progress"></div>
   </div>
-  <button class="toast-close" (click)="hideToast()">
-    <i class="fas fa-times"></i>
-  </button>
 </div>

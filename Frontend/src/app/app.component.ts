@@ -6,7 +6,8 @@ import { FooterComponent } from './components/main/footer/footer.component'
 import { ReactiveFormsModule,FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet,FooterComponent],
+  standalone: true,
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

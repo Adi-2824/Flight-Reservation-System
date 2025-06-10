@@ -74,6 +74,7 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
   toastMessage = ""
   toastType = "success"
   toastIcon = "fas fa-check-circle"
+  isLoading = true
 
   // Countdown properties
   countdownMinutes = 0
@@ -98,50 +99,59 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
   }
 
   fetchBookingDetails(): void {
-    this.bookingService
-      .getBookingInformation(this.bookingId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data: any) => {
-          console.log("Booking Details:", data)
-          
-          try {
-            const departureTime = new Date(data.flight?.departureDateTime)
-            const currentTime = new Date()
-            const hoursUntilDeparture = (departureTime.getTime() - currentTime.getTime()) / (1000 * 60 * 60)
+    this.isLoading = true
+    
+    // Simulate loading time for better UX
+    setTimeout(() => {
+      this.bookingService
+        .getBookingInformation(this.bookingId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (data: any) => {
+            console.log("Booking Details:", data)
+            
+            try {
+              const departureTime = new Date(data.flight?.departureDateTime)
+              const currentTime = new Date()
+              const hoursUntilDeparture = (departureTime.getTime() - currentTime.getTime()) / (1000 * 60 * 60)
 
-            this.bookingData = {
-              ...data,
-              status: data.status ?? 0,
-              expiresAt: data.expiresAt ? new Date(data.expiresAt + "Z") : null,
-              payment: {
-                paymentMethod: this.getPaymentMethod(data.payment?.paymentMethod ?? -1),
-                status: this.getPaymentStatus(data.payment?.status ?? -1),
-              },
-              passengers:
-                data.passengers?.map((passenger: { firstName: string; lastName: string; seatClass: number }) => ({
-                  ...passenger,
-                  seatClass: this.getSeatClass(passenger.seatClass ?? -1),
-                })) ?? [],
-              canCancel: data.status === 1 && hoursUntilDeparture > 24,
-              totalAmount: data.totalAmount || 0,
-              bookingDate: data.bookingDate || new Date().toISOString(),
-            }
+              this.bookingData = {
+                ...data,
+                status: data.status ?? 0,
+                expiresAt: data.expiresAt ? new Date(data.expiresAt + "Z") : null,
+                payment: {
+                  paymentMethod: this.getPaymentMethod(data.payment?.paymentMethod ?? -1),
+                  status: this.getPaymentStatus(data.payment?.status ?? -1),
+                },
+                passengers:
+                  data.passengers?.map((passenger: { firstName: string; lastName: string; seatClass: number }) => ({
+                    ...passenger,
+                    seatClass: this.getSeatClass(passenger.seatClass ?? -1),
+                  })) ?? [],
+                canCancel: data.status === 1 && hoursUntilDeparture > 24,
+                totalAmount: data.totalAmount || 0,
+                bookingDate: data.bookingDate || new Date().toISOString(),
+              }
 
-            // Start countdown if booking is pending
-            if (this.bookingData?.status === 0 && this.bookingData.expiresAt) {
-              this.startCountdown()
+              // Start countdown if booking is pending
+              if (this.bookingData?.status === 0 && this.bookingData.expiresAt) {
+                this.startCountdown()
+              }
+              
+              this.isLoading = false
+            } catch (error) {
+              console.error("Error processing booking data:", error)
+              this.showToastMessage("error", "Error processing booking data")
+              this.isLoading = false
             }
-          } catch (error) {
-            console.error("Error processing booking data:", error)
-            this.showToastMessage("error", "Error processing booking data")
-          }
-        },
-        error: (err) => {
-          console.error("Error fetching booking details:", err)
-          this.showToastMessage("error", "Failed to load booking details. Please try again.")
-        },
-      })
+          },
+          error: (err) => {
+            console.error("Error fetching booking details:", err)
+            this.showToastMessage("error", "Failed to load booking details. Please try again.")
+            this.isLoading = false
+          },
+        })
+    }, 1500) // Simulated loading time
   }
 
   private startCountdown(): void {
@@ -331,7 +341,6 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
   }
 
   private fallbackCopy(text: string): void {
-    // Fallback for older browsers
     const textArea = document.createElement('textarea')
     textArea.value = text
     document.body.appendChild(textArea)
@@ -381,13 +390,13 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
                   `Reservation cancelled successfully. Refund Amount: $${res.refundAmount}`,
                 )
                 if (this.bookingData) {
-                  this.bookingData.status = 3 // Refunded
+                  this.bookingData.status = 3
                   this.bookingData.refundAmount = res.refundAmount
                 }
               } else {
                 this.showToastMessage("info", "Reservation cancelled successfully. No refund is applicable.")
                 if (this.bookingData) {
-                  this.bookingData.status = 2 // Cancelled
+                  this.bookingData.status = 2
                 }
               }
 
@@ -411,7 +420,6 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
     this.isProcessing = true
     console.log("Proceeding to payment for booking ID:", this.bookingId)
 
-    // Simulate processing delay
     setTimeout(() => {
       this.router.navigate(["/payment", this.bookingId]).catch(err => {
         console.error("Navigation error:", err)
@@ -426,7 +434,6 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
 
     this.showToastMessage("info", "Downloading your ticket...")
 
-    // Simulate ticket download
     setTimeout(() => {
       this.showToastMessage("success", "Ticket downloaded successfully!")
     }, 2000)
@@ -510,7 +517,6 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
     this.toastIcon = this.getToastIcon(type)
     this.showToast = true
 
-    // Auto hide after 5 seconds
     setTimeout(() => {
       this.hideToast()
     }, 5000)

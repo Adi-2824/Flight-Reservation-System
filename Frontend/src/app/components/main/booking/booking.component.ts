@@ -29,6 +29,7 @@ interface Traveller {
 
 @Component({
   selector: "app-booking",
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: "./booking.component.html",
   styleUrl: "./booking.component.css",
@@ -114,6 +115,35 @@ export class BookingComponent implements OnInit, OnDestroy {
     return genderMap[value] || "Unknown"
   }
 
+  // New utility methods for template
+  getPassengersByClass(className: string): Traveller[] {
+    const classValue = className === 'Economy' ? SeatClass.Economy : SeatClass.Business;
+    return this.travellerList.filter(traveller => traveller.seatClass === classValue);
+  }
+
+  calculateAirportTaxes(): number {
+    // Calculate airport taxes as 10% of base fare
+    const baseFare = this.travellerList.reduce((total, traveller) => total + traveller.price, 0);
+    return Math.round(baseFare * 0.1);
+  }
+
+  calculateServiceCharges(): number {
+    // Calculate service charges as $25 per passenger
+    return this.travellerList.length * 25;
+  }
+
+  calculateGrandTotal(): number {
+    const baseFare = this.calculateTotalFare();
+    const taxes = this.calculateAirportTaxes();
+    const service = this.calculateServiceCharges();
+    return baseFare + taxes + service;
+  }
+
+  calculateSavings(): number {
+    // Mock savings calculation - you can customize this logic
+    return Math.round(this.calculateTotalFare() * 0.05);
+  }
+
   // Utility methods
   calculateTotalFare(): number {
     return this.travellerList.reduce((total, traveller) => total + traveller.price, 0)
@@ -131,6 +161,39 @@ export class BookingComponent implements OnInit, OnDestroy {
     const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
 
     return `${hours}h ${minutes}m`
+  }
+
+  // Form validation helper methods
+  hasFieldError(fieldName: string): boolean {
+    const field = this.travellerForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.travellerForm.get(fieldName);
+    if (field && field.errors) {
+      if (field.errors['required']) {
+        return `${this.getFieldDisplayName(fieldName)} is required`;
+      }
+      if (field.errors['min']) {
+        return `${this.getFieldDisplayName(fieldName)} must be at least ${field.errors['min'].min}`;
+      }
+      if (field.errors['max']) {
+        return `${this.getFieldDisplayName(fieldName)} must not exceed ${field.errors['max'].max}`;
+      }
+    }
+    return '';
+  }
+
+  private getFieldDisplayName(fieldName: string): string {
+    const displayNames: Record<string, string> = {
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      age: 'Age',
+      gender: 'Gender',
+      seatClass: 'Seat Class'
+    };
+    return displayNames[fieldName] || fieldName;
   }
 
   // Form methods
@@ -165,6 +228,7 @@ export class BookingComponent implements OnInit, OnDestroy {
       this.travellerForm.reset()
       this.travellerForm.patchValue({ seatClass: "Economy" }) // Reset to default
       this.isProcessing = false
+      this.isEditing = false // Reset editing state
 
       this.showToastMessage(`${newTraveller.firstName} ${newTraveller.lastName} added successfully!`)
     }, 800)
@@ -190,6 +254,14 @@ export class BookingComponent implements OnInit, OnDestroy {
   removeTraveller(index: number): void {
     const traveller = this.travellerList[index]
     if (!traveller) return
+
+    // If we're in editing mode, just remove without confirmation
+    if (this.isEditing) {
+      this.travellerList.splice(index, 1)
+      // Update IDs
+      this.travellerList.forEach((t, i) => (t.id = i))
+      return
+    }
 
     Swal.fire({
       title: "Remove Passenger?",
@@ -231,7 +303,7 @@ export class BookingComponent implements OnInit, OnDestroy {
           <p><strong>Flight:</strong> ${this.flightDetails?.flightNumber}</p>
           <p><strong>Route:</strong> ${this.flightDetails?.origin} → ${this.flightDetails?.destination}</p>
           <p><strong>Passengers:</strong> ${this.travellerList.length}</p>
-          <p><strong>Total Amount:</strong> $${this.calculateTotalFare()}</p>
+          <p><strong>Total Amount:</strong> $${this.calculateGrandTotal()}</p>
         </div>
       `,
       icon: "question",
@@ -291,6 +363,17 @@ export class BookingComponent implements OnInit, OnDestroy {
         },
       })
   }
+
+  getEconomyPassengerTotal(): number
+{
+  return this.getPassengersByClass('Economy').reduce((total, passenger) => total + passenger.price, 0);
+}
+
+getBusinessPassengerTotal()
+: number
+{
+  return this.getPassengersByClass('Business').reduce((total, passenger) => total + passenger.price, 0);
+}
 
   // Toast methods
   private showToastMessage(message: string): void {
