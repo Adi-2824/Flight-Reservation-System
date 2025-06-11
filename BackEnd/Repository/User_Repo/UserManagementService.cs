@@ -200,11 +200,21 @@ namespace air_reservation.Repository.User_Repo
             if (user == null)
                 return false;
 
+            // Verify current password
+            if (!BCrypt.Net.BCrypt.Verify(changePasswordDto.CurrentPassword, user.Password))
+                throw new UnauthorizedAccessException("Current password is incorrect.");
+
+            // Check if new password and confirm password match
+            if (changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword)
+                throw new ArgumentException("New password and confirm password do not match.");
+
+            // Update password
             user.Password = BCrypt.Net.BCrypt.HashPassword(changePasswordDto.NewPassword);
             await _context.SaveChangesAsync();
 
             return true;
         }
+
 
         public async Task<List<UserListDTO>> GetRecentUsersAsync(int count = 10)
         {

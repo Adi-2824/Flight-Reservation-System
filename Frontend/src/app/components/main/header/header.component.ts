@@ -1,5 +1,5 @@
 import { Component, inject, type OnInit, type OnDestroy, HostListener } from "@angular/core"
-import { Router, RouterLink, RouterLinkActive, NavigationEnd } from "@angular/router"
+import { Router, RouterLink, RouterLinkActive, NavigationEnd, RouterModule } from "@angular/router"
 import { AuthService } from "../../../services/auth.service"
 import { CommonModule } from "@angular/common"
 import { Subject, takeUntil, filter } from "rxjs"
@@ -10,6 +10,10 @@ interface NavItem {
   route: string
   icon?: string
   exact?: boolean
+
+  primary?: boolean; // for highlighting (e.g., CTA)
+  logout?: boolean;  // for logout styling
+
 }
 
 @Component({
@@ -265,5 +269,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
       "user-plus": "M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z",
     }
     return icons[iconName] || ""
+  }
+
+  goToProfile(): void {
+    console.log('Navigating to profile');
+    this.closeUserMenu()
+    this.router.navigate(['/userprofile'])
   }
 }

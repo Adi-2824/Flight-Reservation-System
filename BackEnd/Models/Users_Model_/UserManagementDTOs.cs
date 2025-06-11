@@ -22,10 +22,11 @@ namespace air_reservation.Models.Users_Model_
 
     public class ChangePasswordDTO
     {
-        [Required]
-        [MinLength(6)]
-        public string NewPassword { get; set; }
+        public string? CurrentPassword { get; set; }
+        public string? NewPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
     }
+
 
     public class UserDetailsDTO
     {

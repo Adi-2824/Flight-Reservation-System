@@ -232,6 +232,16 @@ export class AuthService {
     return this.userData
   }
 
+  updateUserProfile(data: any): Observable<any> {
+    return this.http.put(`${this.API_URL}/UserManagement/UpdateMyProfile`, data).pipe(
+      tap((response: any) => {
+        // Update userData in memory and localStorage
+        this.userData = response
+        localStorage.setItem(this.USER_DATA_KEY, JSON.stringify(response))
+      })
+    )
+  } 
+
   /**
    * Get user data from localStorage
    * @returns any

@@ -166,6 +166,7 @@ namespace air_reservation.Controllers
         /// <summary>
         /// Change current user's password
         /// </summary>
+        
         [HttpPost("change-password")]
         public async Task<ActionResult> ChangeMyPassword([FromBody] ChangePasswordDTO changePasswordDto)
         {
@@ -175,11 +176,23 @@ namespace air_reservation.Controllers
                 return BadRequest(new { message = "Invalid user token" });
             }
 
-            var result = await _userManagementService.ChangeUserPasswordAsync(userId, changePasswordDto);
-            if (!result)
-                return NotFound(new { message = "User not found" });
+            try
+            {
+                var result = await _userManagementService.ChangeUserPasswordAsync(userId, changePasswordDto);
+                if (!result)
+                    return NotFound(new { message = "User not found" });
 
-            return Ok(new { message = "Password changed successfully" });
+                return Ok(new { message = "Password changed successfully" });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
+
     }
 }

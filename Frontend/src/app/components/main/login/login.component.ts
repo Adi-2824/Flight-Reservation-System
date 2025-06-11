@@ -139,7 +139,7 @@ export class LoginComponent {
           console.log("✅ Login Success", data);
           localStorage.setItem("token", data.token);
           this.isLoading = false;
-          this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/home");
+          this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/");
         },
         error: (err: any) => {
           console.error("❌ Login Failed", err);

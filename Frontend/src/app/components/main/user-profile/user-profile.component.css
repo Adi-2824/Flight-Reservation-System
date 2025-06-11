@@ -1,0 +1,59 @@
+.profile-container {
+  display: flex;
+  height: 100vh;
+}
+
+.side-panel {
+  width: 30%;
+  background: #f4f4f4;
+  padding: 20px;
+}
+
+.side-panel ul {
+  list-style: none;
+  padding: 0;
+}
+
+.side-panel ul li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ccc;
+}
+
+.side-panel ul li:hover {
+  background: #ddd;
+}
+
+.content-panel {
+  width: 70%;
+  padding: 20px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 10px;
+}
+
+input {
+  padding: 8px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+button {
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #ccc;
+}
+
+

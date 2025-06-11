@@ -18,6 +18,7 @@ import { BookingInformationComponent } from './components/main/booking-informati
 import { AboutComponent } from './components/main/about/about.component';
 import { ContactComponent } from './components/main/contact/contact.component';
 import { PaymentComponent } from './components/main/payment/payment.component';
+import { UserProfileComponent } from './components/main/user-profile/user-profile.component';
 
 export const routes: Routes = [
   {
@@ -34,6 +35,10 @@ export const routes: Routes = [
       {
         path: 'booking-confirmation/:flightId',
         component: BookingConfirmationComponent,
+      },
+      {
+        path: 'userprofile',
+        component: UserProfileComponent,
       },
       { path: 'payment/:reservationId', component: PaymentComponent },
       {
