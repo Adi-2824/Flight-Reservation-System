@@ -1,8 +1,17 @@
 <div class="payment-page">
-  <!-- Header Section -->
-  <div class="payment-header">
+  <!-- Header Section - IMPROVED -->
+  <!-- <div class="payment-header">
     <div class="container">
       <div class="header-content">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-icon">
+            <path d="M15 4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6C4 4.89543 4.89543 4 6 4H9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M15 8L12 5L9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 5V15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="logo-text">SkyBooking</span>
+        </div>
+        
         <div class="step-indicator">
           <div class="step completed">
             <div class="step-circle">
@@ -46,7 +55,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Main Content -->
   <div class="payment-content">
@@ -116,11 +125,11 @@
             </div>
 
             <!-- Card Details Form -->
-            <div class="card-details-section" *ngIf="selectedPaymentMethod" [@slideInUp]>
+            <div class="card-details-section" *ngIf="selectedPaymentMethod">
               <h3 class="section-title">Card Information</h3>
               
               <!-- Saved Card Option -->
-              <div class="saved-card-option" *ngIf="hasSavedCard" [@fadeIn]>
+              <div class="saved-card-option" *ngIf="hasSavedCard">
                 <label class="saved-card-label">
                   <input type="checkbox" [(ngModel)]="useSavedCard" (change)="onUseSavedCardChange()">
                   <div class="saved-card-content">
@@ -150,7 +159,6 @@
                       name="cardHolderName"
                       [disabled]="useSavedCard"
                       (input)="validateForm()"
-                      #cardHolderName="ngModel"
                       required>
                     <div class="input-icon">
                       <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -158,9 +166,6 @@
                         <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       </svg>
                     </div>
-                  </div>
-                  <div class="form-error" *ngIf="cardHolderName.invalid && cardHolderName.touched">
-                    Cardholder name is required
                   </div>
                 </div>
 
@@ -174,21 +179,16 @@
                       [(ngModel)]="paymentData.cardNumber"
                       name="cardNumber"
                       [disabled]="useSavedCard"
-                      (input)="formatCardNumber($event); validateForm()"
+                      (input)="formatCardNumber($event)"
                       (keypress)="onCardNumberKeyPress($event)"
                       maxlength="19"
-                      #cardNumber="ngModel"
                       required>
                     <div class="input-icon card-type-icon" [class]="detectedCardType">
                       <svg *ngIf="!detectedCardType" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <rect x="1" y="4" width="22" height="16" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
                         <line x1="1" y1="10" x2="23" y2="10" stroke="currentColor" stroke-width="2"/>
                       </svg>
-                      <!-- Card type icons will be dynamically shown based on detected type -->
                     </div>
-                  </div>
-                  <div class="form-error" *ngIf="cardNumber.invalid && cardNumber.touched">
-                    Valid card number is required
                   </div>
                 </div>
 
@@ -202,14 +202,10 @@
                         name="expiryMonth"
                         [disabled]="useSavedCard"
                         (change)="validateForm()"
-                        #expiryMonth="ngModel"
                         required>
                         <option value="">MM</option>
                         <option *ngFor="let month of months" [value]="month.value">{{month.label}}</option>
                       </select>
-                    </div>
-                    <div class="form-error" *ngIf="expiryMonth.invalid && expiryMonth.touched">
-                      Month required
                     </div>
                   </div>
 
@@ -222,14 +218,10 @@
                         name="expiryYear"
                         [disabled]="useSavedCard"
                         (change)="validateForm()"
-                        #expiryYear="ngModel"
                         required>
                         <option value="">YYYY</option>
                         <option *ngFor="let year of years" [value]="year">{{year}}</option>
                       </select>
-                    </div>
-                    <div class="form-error" *ngIf="expiryYear.invalid && expiryYear.touched">
-                      Year required
                     </div>
                   </div>
 
@@ -246,7 +238,6 @@
                         (input)="validateForm()"
                         (keypress)="onCvvKeyPress($event)"
                         maxlength="4"
-                        #cvv="ngModel"
                         required>
                       <div class="input-icon cvv-icon" (mouseenter)="showCvvTooltip = true" (mouseleave)="showCvvTooltip = false">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -269,9 +260,6 @@
                         </div>
                       </div>
                     </div>
-                    <div class="form-error" *ngIf="cvv.invalid && cvv.touched">
-                      CVV is required
-                    </div>
                   </div>
                 </div>
 
@@ -293,7 +281,7 @@
               </form>
             </div>
 
-            <!-- Payment Button -->
+            <!-- Payment Button - IMPROVED -->
             <div class="payment-actions">
               <button 
                 class="pay-button"
@@ -335,7 +323,7 @@
               </h3>
             </div>
 
-            <div class="booking-details" *ngIf="bookingInfo">
+            <div class="booking-details">
               <div class="flight-info">
                 <div class="flight-route">
                   <div class="airport">
@@ -408,7 +396,7 @@
                 </svg>
               </div>
               
-              <div class="promo-form" [class.show]="showPromoCode" [@slideDown]>
+              <div class="promo-form" [class.show]="showPromoCode">
                 <div class="promo-input-wrapper">
                   <input 
                     type="text" 

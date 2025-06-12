@@ -124,12 +124,12 @@ export class BookingComponent implements OnInit, OnDestroy {
   calculateAirportTaxes(): number {
     // Calculate airport taxes as 10% of base fare
     const baseFare = this.travellerList.reduce((total, traveller) => total + traveller.price, 0);
-    return Math.round(baseFare * 0.1);
+    return 0;
   }
 
   calculateServiceCharges(): number {
     // Calculate service charges as $25 per passenger
-    return this.travellerList.length * 25;
+    return this.travellerList.length * 0;
   }
 
   calculateGrandTotal(): number {

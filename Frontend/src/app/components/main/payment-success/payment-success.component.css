@@ -10,6 +10,7 @@
   --accent-color: #10b981;
   --accent-hover: #059669;
   --success-color: #10b981;
+  --success-hover: #059669;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
   --text-primary: #1f2937;
@@ -89,7 +90,7 @@
   }
 }
 
-/* Success Header */
+/* Success Header - Changed to green background */
 .success-header {
   text-align: center;
   margin-bottom: 3rem;
@@ -98,15 +99,15 @@
 .success-icon {
   width: 100px;
   height: 100px;
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(135deg, #22c55e, #10b981); /* Changed to green gradient */
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1.5rem;
   color: white;
-  box-shadow: 0 0 0 10px rgba(59, 130, 246, 0.1);
-  animation: pulse 2s infinite;
+  box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.1); /* Green glow */
+  animation: pulse-green 2s infinite;
 }
 
 .success-icon svg {
@@ -114,15 +115,15 @@
   height: 50px;
 }
 
-@keyframes pulse {
+@keyframes pulse-green {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 15px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 15px rgba(16, 185, 129, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
   }
 }
 
@@ -131,7 +132,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background: linear-gradient(135deg, #22c55e, #059669); /* Green gradient text */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -206,11 +207,11 @@
   }
 }
 
-/* Action Buttons */
+/* Action Buttons - Enhanced for better visibility */
 .action-buttons {
   display: flex;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem; /* Increased spacing between buttons */
   margin-bottom: 4rem;
   flex-wrap: wrap;
 }
@@ -219,53 +220,60 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 2rem; /* Increased padding for better visibility */
   border-radius: var(--border-radius);
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem; /* Slightly larger font */
   cursor: pointer;
   transition: all var(--transition-normal);
   border: none;
-  min-width: 180px;
+  min-width: 200px; /* Ensure minimum width */
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .action-button svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
+/* Print button - Blue */
 .print-button {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: white;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
 }
 
 .print-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
 }
 
+/* Email button - White with border */
 .email-button {
   background: white;
   color: var(--text-primary);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
 }
 
 .email-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  background: var(--surface-hover);
 }
 
+/* Download button - Green */
 .download-button {
-  background: var(--surface-secondary);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
 }
 
 .download-button:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-xl);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
 /* Next Steps */
@@ -470,6 +478,18 @@
   to {
     opacity: 1;
   }
+}
+
+/* Angular animation classes */
+.success-header[_ngcontent-ng-c3238916412] {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.ticket-section[_ngcontent-ng-c3238916412],
+.action-buttons[_ngcontent-ng-c3238916412],
+.next-steps[_ngcontent-ng-c3238916412],
+.support-section[_ngcontent-ng-c3238916412] {
+  animation: fadeInUp 0.6s ease-out;
 }
 
 /* Responsive Design */

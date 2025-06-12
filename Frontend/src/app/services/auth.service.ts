@@ -84,11 +84,13 @@ export class AuthService {
    */
   signIn(user: any): Observable<any> {
     this.userData = user;
+    console.log("new yash",this.userData)
     const headers = this.createPublicHeaders();
 
     return this.http.post(`${this.API_URL}/Auth/login`, user, { headers }).pipe(
       tap((response: any) => {
         this.userData = response;
+        console.log("hello ysah",this.userData)
 
         // Store token and user data
         if (response.token) {

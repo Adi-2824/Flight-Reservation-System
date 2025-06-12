@@ -514,7 +514,7 @@ private loadBookingInformation(): void {
         this.bookingId = bookingData.bookingReference
         this.flightDetails = bookingData.flight
         this.travellerList = bookingData.passengers
-        this.totalAmount = bookingData.totalAmount
+        this.totalAmount = bookingData.totalAmount 
         this.isLoading = false
 
         // Animate content entrance
