@@ -1,6 +1,82 @@
 /* Global Styles and Variables */
 /* Enhanced Flight Search Component Styles */
+/* Add these styles to your component CSS file */
 
+.swap-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  align-self: end;
+  margin-bottom: 8px;
+}
+
+.swap-icon {
+  width: 60px;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+  transform: rotate(180deg) scaleX(1.5); /* Rotate and stretch horizontally */
+}
+
+.swap-icon:hover {
+  opacity: 1;
+  transform: rotate(180deg) scaleX(1.5) scale(1.1); /* Keep stretched and scale on hover */
+}
+
+/* Alternative styling for a more prominent horizontal swap button */
+.swap-icon-prominent {
+  width: 72px;
+  height: 48px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 24px; /* More oval shape for stretched button */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: rotate(180deg) scaleX(1.5); /* Rotate and stretch horizontally */
+}
+
+.swap-icon-prominent:hover {
+  background: #e9ecef;
+  transform: rotate(180deg) scaleX(1.5) scale(1.05); /* Keep stretched and scale slightly */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* If you want to keep the arrow animations */
+.swap-arrows {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.swap-container:hover .swap-arrows {
+  opacity: 0.3;
+}
+
+.arrow-top,
+.arrow-bottom {
+  position: absolute;
+  font-size: 8px;
+  color: #6c757d;
+}
+
+.arrow-top {
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.arrow-bottom {
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+}
 
 .search-section {
   max-width: 1200px;

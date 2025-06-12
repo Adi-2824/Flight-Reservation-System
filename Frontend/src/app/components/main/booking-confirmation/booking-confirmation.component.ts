@@ -551,9 +551,7 @@ private loadBookingInformation(): void {
 
   // Utility methods
   calculateTotalFare(): number {
-    return this.travellerList.reduce((total, traveller) => {
-      return total + (traveller.price || 0)
-    }, 0)
+    return this.totalAmount
   }
 
   calculateFlightDuration(): string {
