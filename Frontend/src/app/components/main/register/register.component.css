@@ -7,6 +7,10 @@
   --secondary-gradient: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 50%, #0891b2 100%);
   --sunset-gradient: linear-gradient(135deg, #f97316 0%, #db2777 50%, #7c3aed 100%);
   --ocean-gradient: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #38bdf8 100%);
+  
+  /* RIGHT SIDE BACKGROUND COLOR - Change this to modify the right side color */
+  --right-side-gradient: linear-gradient(90deg, rgba(104, 95, 199, 1) 0%, rgba(48, 48, 150, 1) 52%, rgba(0, 212, 255, 1) 100%);
+  
   --aviation-blue: #2563eb;
   --sky-blue: #0ea5e9;
   --purple: #7c3aed;
@@ -217,13 +221,16 @@
   letter-spacing: -0.025em;
 }
 
+/* FIXED: SkyWings text visibility - now uses dark blue instead of transparent gradient */
 .gradient-text {
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #7c2d12 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   display: inline-block;
   position: relative;
+  font-weight: 800;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .gradient-text::after {
@@ -233,7 +240,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #7c2d12 100%);
   transform: scaleX(0);
   transform-origin: right;
   transition: transform 0.3s ease;
@@ -424,7 +431,7 @@
   }
 }
 
-/* Submit Button - Enhanced Aviation Theme */
+/* FIXED: Submit Button - Now highly visible with dark background and white text */
 .submit-container {
   margin-top: 1rem;
 }
@@ -432,17 +439,18 @@
 .submit-btn {
   width: 100%;
   height: 52px;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #1e40af 0%, #3730a3 50%, #7c2d12 100%);
   border: none;
   border-radius: 12px;
-  color: var(--white);
+  color: #ffffff;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: var(--shadow-md), 0 0 10px rgba(124, 58, 237, 0.3);
+  box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .submit-btn::before {
@@ -462,7 +470,8 @@
 
 .submit-btn:hover:not(:disabled) {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-lg), 0 0 15px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 8px 25px rgba(30, 64, 175, 0.5), 0 4px 8px rgba(0, 0, 0, 0.15);
+  background: linear-gradient(135deg, #1d4ed8 0%, #4338ca 50%, #92400e 100%);
 }
 
 .submit-btn:active:not(:disabled) {
@@ -480,6 +489,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .loading-content {
@@ -490,7 +501,7 @@
   width: 18px;
   height: 18px;
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid var(--white);
+  border-top: 2px solid #ffffff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -555,10 +566,12 @@
   transform-origin: left;
 }
 
-/* Flight-themed Image Section - Enhanced with more colors */
+/* UPDATED: Flight-themed Image Section - New color scheme */
 .image-section {
   position: relative;
-  background: var(--primary-gradient);
+  background: var(--right-side-gradient);
+  background-size: 400% 400%;
+  animation: rightSideAnimation 20s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -566,10 +579,22 @@
   overflow: hidden;
 }
 
+@keyframes rightSideAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .image-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.15);
   z-index: 1;
 }
 
@@ -635,6 +660,8 @@
   inset: 0;
   overflow: hidden;
   z-index: 2;
+  background: #685fc7;
+background: linear-gradient(90deg, rgba(104, 95, 199, 1) 0%, rgba(48, 48, 150, 1) 52%, rgba(0, 212, 255, 1) 100%);
 }
 
 /* Enhanced Animated Clouds */
@@ -809,57 +836,6 @@
   }
   50% {
     transform: translateY(-10px);
-  }
-}
-
-/* Image Frame with Shine Effect */
-.image-frame {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(124, 58, 237, 0.3);
-  margin-bottom: 1.5rem;
-}
-
-.custom-flight-image {
-  width: 100%;
-  max-width: 400px;
-  height: auto;
-  display: block;
-  transform: scale(1);
-  transition: transform 0.5s ease;
-  filter: brightness(1.1) contrast(1.1);
-}
-
-.image-frame:hover .custom-flight-image {
-  transform: scale(1.05);
-}
-
-.image-shine {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    to right,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  transform: skewX(-25deg);
-  animation: shine 3s infinite;
-}
-
-@keyframes shine {
-  0% {
-    left: -100%;
-  }
-  20% {
-    left: 100%;
-  }
-  100% {
-    left: 100%;
   }
 }
 
@@ -1125,10 +1101,6 @@
   .flight-features {
     gap: 1.5rem;
   }
-
-  .custom-flight-image {
-    max-width: 350px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1154,10 +1126,6 @@
     gap: 1.5rem;
   }
 
-  .custom-flight-image {
-    max-width: 300px;
-  }
-
   .destinations-banner {
     flex-wrap: wrap;
   }
@@ -1179,10 +1147,6 @@
 
   .submit-btn {
     height: 48px;
-  }
-
-  .custom-flight-image {
-    max-width: 250px;
   }
 
   .flight-path {
