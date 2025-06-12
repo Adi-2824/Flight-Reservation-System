@@ -1,150 +1,362 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
+  FormBuilder,
   FormGroup,
-  FormControl,
-  Validators,
+  FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { jwtDecode } from 'jwt-decode';
+
+interface UserProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
+}
+
+interface PasswordChange {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
 
 @Component({
   selector: 'app-user-profile',
-  imports: [ReactiveFormsModule, CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css'],
 })
 export class UserProfileComponent implements OnInit {
-  usersService = inject(AuthService);
+  userProfile: UserProfile | null = null;
+  profileForm: FormGroup;
+  passwordForm: FormGroup;
+
   router = inject(Router);
-  selectedOption: string = 'userInfo'; // Default to User Information
-  userForm: FormGroup;
-  changePasswordForm: FormGroup;
-  id!: number;
 
-  constructor() {
-    this.userForm = new FormGroup({
-      id: new FormControl(''),
-      firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
-      email: new FormControl('', Validators.required),
-      phoneNumber: new FormControl(''),
+  // UI States
+  isEditing = false;
+  isLoading = false;
+  isSidebarOpen = false;
+  activeSection = 'profile';
+  showDeleteConfirmation = false;
+
+  firstName: any;
+  lName: any;
+  userEmail: any;
+  userphoneNumber: any;
+
+  // Messages
+  successMessage = '';
+  errorMessage = '';
+
+  constructor(private fb: FormBuilder, private userService: AuthService) {
+    this.profileForm = this.fb.group({
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      email: ['', [Validators.required, Validators.email]],
+      phoneNumber: [
+        '',
+        [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
+      ],
     });
-    this.changePasswordForm = new FormGroup({
-      newPassword: new FormControl('', [
-        Validators.required,
-        Validators.minLength(6),
-      ]),
-    });
-  }
 
-  ngOnInit() {
-    this.loadUserData();
-  }
-
-  // confirmDeleteUser() {
-  //   Swal.fire({
-  //     title: 'Are you sure?',
-  //     text: 'This action cannot be undone. If you have active reservations, deletion is restricted.',
-  //     icon: 'warning',
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Yes, Delete',
-  //     cancelButtonText: 'No, Keep Account',
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       this.deleteUser();
-  //     }
-  //   });
-  // }
-  // deleteUser() {
-  //   if (!this.id) {
-  //     console.error('User ID is missing!');
-  //     Swal.fire({
-  //       title: 'User ID Missing!',
-  //       text: 'Unable to delete user. Please reload the page and try again.',
-  //       icon: 'error',
-  //       confirmButtonText: 'OK',
-  //     });
-
-  //     return;
-  //   }
-  //   this.usersService.deleteUser(this.id).subscribe({
-  //     next: () => {
-  //       Swal.fire({
-  //         title: 'Account Deleted!',
-  //         text: 'Your account has been successfully deleted.',
-  //         icon: 'success',
-  //         timer: 2000,
-  //         showConfirmButton: false,
-  //       }).then(() => {
-  //         localStorage.clear(); // ✅ Remove authentication tokens
-  //         this.router.navigate(['/home']); // ✅ Redirect user after deletion
-  //       });
-  //     },
-  //     error: (err) => {
-  //       console.error('Error deleting user:', err);
-  //       Swal.fire({
-  //         title: 'Deletion Failed!',
-  //         text: err.error || 'An error occurred while deleting your account.',
-  //         icon: 'error',
-  //         confirmButtonText: 'OK',
-  //       });
-  //     },
-  //   });
-  // }
-
-  // changeUserPassword() {
-  //   if (this.changePasswordForm.valid) {
-  //     this.usersService
-  //       .changeUserPassword(this.changePasswordForm.value.newPassword)
-  //       .subscribe({
-  //         next: () => {
-  //           alert('Password changed successfully!');
-  //           this.changePasswordForm.reset();
-  //         },
-  //         error: (err) => {
-  //           console.error('Error changing password:', err);
-  //           alert('Failed to update password.');
-  //         },
-  //       });
-  //   }
-  // }
-
-  loadUserData() {
-    this.usersService.getUserData().subscribe({
-      next: (user: any) => {
-        console.log(user);
-        if (user) {
-          this.id = user.id; // ✅ Explicitly store user ID
-          console.log('User ID set:', this.id);
-          this.userForm.patchValue({
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-          });
-        }
+    this.passwordForm = this.fb.group(
+      {
+        currentPassword: ['', [Validators.required]],
+        newPassword: ['', [Validators.required, Validators.minLength(8)]],
+        confirmPassword: ['', [Validators.required]],
       },
-      error: (err: any) => {
-        console.error('Error fetching user data:', err);
-      },
-    });
+      { validators: this.passwordMatchValidator }
+    );
+
+    // Disable the profile form initially
+    this.profileForm.disable();
   }
 
-  updateUserInfo() {
-    if (this.userForm.valid) {
-      this.usersService.updateUserProfile(this.userForm.value).subscribe({
-        next: (updatedUser) => {
-          console.log('User updated successfully:', updatedUser);
-          alert('Profile updated successfully!');
-        },
-        error: (err) => {
-          console.error('Error updating user:', err);
-        },
+  ngOnInit(): void {
+    this.loadUserProfile();
+
+    // Get user data from service
+    const userData = this.userService.getUserData();
+
+    if (userData && userData.user) {
+      this.firstName = userData.user.firstName;
+      this.lName = userData.user.lastName;
+      this.userEmail = userData.user.email;
+      this.userphoneNumber = userData.user.phoneNumber;
+
+      // Patch the form with the data
+      this.profileForm.patchValue({
+        firstName: this.firstName,
+        lastName: this.lName,
+        email: this.userEmail,
+        phoneNumber: this.userphoneNumber,
       });
+    } else {
+      // If no user data, try to refresh it
+      this.loadUserProfile();
     }
+
+    console.log(this.firstName);
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    const newPassword = form.get('newPassword');
+    const confirmPassword = form.get('confirmPassword');
+
+    if (
+      newPassword &&
+      confirmPassword &&
+      newPassword.value !== confirmPassword.value
+    ) {
+      confirmPassword.setErrors({ mismatch: true });
+      return { mismatch: true };
+    }
+    return null;
+  }
+
+  async loadUserProfile(): Promise<void> {
+    this.isLoading = true;
+    this.clearMessages();
+
+    try {
+      // getUserData() returns data directly, not a Promise/Observable
+      const userData = this.userService.getUserData();
+
+      if (userData && userData.user) {
+        this.userProfile = userData;
+
+        // Update component variables
+        this.firstName = userData.user.firstName;
+        this.lName = userData.user.lastName;
+        this.userEmail = userData.user.email;
+        this.userphoneNumber = userData.user.phoneNumber;
+
+        // Patch form
+        this.profileForm.patchValue({
+          firstName: this.firstName,
+          lastName: this.lName,
+          email: this.userEmail,
+          phoneNumber: this.userphoneNumber,
+        });
+
+        this.profileForm.disable();
+        this.isEditing = false;
+      } else {
+        this.errorMessage = 'No user data found. Please login again.';
+      }
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Failed to load user profile';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  toggleEdit(): void {
+    if (this.isEditing) {
+      // Cancel editing - reset form and disable
+      if (this.userProfile) {
+        this.profileForm.patchValue(this.userProfile);
+      }
+      this.profileForm.disable();
+    } else {
+      // Start editing - enable form
+      this.profileForm.enable();
+    }
+
+    this.isEditing = !this.isEditing;
+    this.clearMessages();
+  }
+
+  async updateProfile(): Promise<void> {
+    if (this.profileForm.invalid) {
+      this.markFormGroupTouched(this.profileForm);
+      return;
+    }
+
+    this.isLoading = true;
+    this.clearMessages();
+
+    try {
+      // updateUserProfile returns an Observable, so use toPromise() here
+      const updatedProfile = await this.userService
+        .updateUserProfile(this.profileForm.value)
+        .toPromise();
+
+      this.userProfile = updatedProfile;
+
+      // Update component variables with new data
+      if (updatedProfile && updatedProfile.user) {
+        this.firstName = updatedProfile.user.firstName;
+        this.lName = updatedProfile.user.lastName;
+        this.userEmail = updatedProfile.user.email;
+        this.userphoneNumber = updatedProfile.user.phoneNumber;
+      }
+
+      this.isEditing = false;
+      this.profileForm.disable();
+      this.successMessage = 'Profile updated successfully!';
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Failed to update profile';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  async changePassword(): Promise<void> {
+    if (this.passwordForm.invalid) {
+      this.markFormGroupTouched(this.passwordForm);
+      return;
+    }
+
+    this.isLoading = true;
+    this.clearMessages();
+
+    try {
+      // changePassword returns an Observable, so use toPromise() here
+      await this.userService
+        .changePassword(this.passwordForm.value)
+        .toPromise();
+
+      this.passwordForm.reset();
+      this.successMessage = 'Password changed successfully!';
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Failed to change password';
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  confirmDeleteAccount(): void {
+    this.showDeleteConfirmation = true;
+    this.clearMessages();
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirmation = false;
+  }
+
+  async deleteAccount(): Promise<void> {
+    this.isLoading = true;
+    this.clearMessages();
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const tokenData: any = jwtDecode(token);
+      const userId: any =
+        tokenData[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
+        ];
+
+      // deleteAccount returns an Observable, so use toPromise() here
+      await this.userService.deleteAccount(userId).toPromise();
+
+      // Sign out and redirect after successful deletion
+      this.userService.signOut();
+      this.router.navigate(['dashboard/login']);
+
+      // Show success message
+      alert(
+        'Account deleted successfully. You will be redirected to the login page.'
+      );
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Failed to delete account';
+      this.showDeleteConfirmation = false;
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  setActiveSection(section: string): void {
+    this.activeSection = section;
+    this.clearMessages();
+    this.isEditing = false;
+
+    // Always disable profile form when switching sections or when not editing
+    this.profileForm.disable();
+
+    if (section === 'password') {
+      this.passwordForm.reset();
+    }
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach((key) => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  private clearMessages(): void {
+    this.successMessage = '';
+    this.errorMessage = '';
+  }
+
+  // Utility methods for template
+  getFieldError(
+    fieldName: string,
+    formGroup: FormGroup = this.profileForm
+  ): string {
+    const control = formGroup.get(fieldName);
+    if (control && control.touched && control.errors) {
+      if (control.errors['required'])
+        return `${this.getFieldDisplayName(fieldName)} is required`;
+      if (control.errors['minlength'])
+        return `${this.getFieldDisplayName(fieldName)} must be at least ${
+          control.errors['minlength'].requiredLength
+        } characters`;
+      if (control.errors['email']) return 'Please enter a valid email address';
+      if (control.errors['pattern'])
+        return 'Please enter a valid mobile number';
+      if (control.errors['mismatch']) return 'Passwords do not match';
+    }
+    return '';
+  }
+
+  hasFieldError(
+    fieldName: string,
+    formGroup: FormGroup = this.profileForm
+  ): boolean {
+    const control = formGroup.get(fieldName);
+    return !!(control && control.touched && control.errors);
+  }
+
+  private getFieldDisplayName(fieldName: string): string {
+    const displayNames: { [key: string]: string } = {
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      username: 'Username',
+      email: 'Email',
+      phoneNumber: 'Mobile Number',
+      currentPassword: 'Current Password',
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm Password',
+    };
+    return displayNames[fieldName] || fieldName;
   }
 }

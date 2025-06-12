@@ -167,7 +167,7 @@ namespace air_reservation.Controllers
         /// Change current user's password
         /// </summary>
         
-        [HttpPost("change-password")]
+        [HttpPut("change-password")]
         public async Task<ActionResult> ChangeMyPassword([FromBody] ChangePasswordDTO changePasswordDto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);

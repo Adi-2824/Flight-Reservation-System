@@ -1,22 +1,32 @@
 <header class="header" [class.scrolled]="isScrolled">
-  <!-- Background Effects -->
+  <!-- Enhanced Background Effects -->
   <div class="header-bg">
     <div class="bg-gradient"></div>
+    <div class="mesh-pattern"></div>
     <div class="floating-orbs">
       <div class="orb orb-1"></div>
       <div class="orb orb-2"></div>
       <div class="orb orb-3"></div>
+      <div class="orb orb-4"></div>
+      <div class="orb orb-5"></div>
     </div>
+    <div class="glass-effect"></div>
   </div>
 
   <div class="container">
-    <!-- Logo -->
+    <!-- Enhanced Logo -->
     <a class="logo" routerLink="/" [class.animated]="logoAnimated">
       <div class="logo-icon">
+        <div class="icon-glow"></div>
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M12 2L2 7V10C2 16 6 20.5 12 22C18 20.5 22 16 22 10V7L12 2Z" fill="currentColor" />
           <path d="M9 12L11 14L15 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
+        <div class="icon-particles">
+          <span class="particle"></span>
+          <span class="particle"></span>
+          <span class="particle"></span>
+        </div>
       </div>
       <div class="logo-text">
         <span class="brand">SkyWings</span>
@@ -24,42 +34,49 @@
       </div>
     </a>
 
-    <!-- Desktop Navigation -->
+    <!-- Enhanced Desktop Navigation -->
     <nav class="nav-desktop">
       <a *ngFor="let item of navItems" [routerLink]="item.route" routerLinkActive="active" class="nav-link" [class.exact]="item.exact">
+        <div class="nav-link-bg"></div>
         <svg *ngIf="item.icon" viewBox="0 0 24 24" fill="none" class="nav-icon">
           <path [attr.d]="getIcon(item.icon)" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         <span>{{ item.label }}</span>
+        <div class="nav-link-shine"></div>
       </a>
     </nav>
 
-    <!-- Mobile Toggle -->
+    <!-- Enhanced Mobile Toggle -->
     <button class="mobile-toggle" (click)="toggleMobileNav()" [class.active]="isMobileNavOpen">
+      <div class="toggle-bg"></div>
       <span></span><span></span><span></span>
     </button>
 
-    <!-- Auth Section -->
+    <!-- Enhanced Auth Section -->
     <div class="auth-section">
-      <!-- My Bookings -->
-      <button *ngIf="hasToken" routerLink="/booking-history" class="btn-secondary" title="My Bookings">
+      <!-- Enhanced My Bookings -->
+      <button *ngIf="hasToken" routerLink="/booking-history" class="btn-secondary enhanced" title="My Bookings">
+        <div class="btn-bg"></div>
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" stroke-width="2" />
           <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" stroke-width="2" />
         </svg>
         <span>My Bookings</span>
+        <div class="btn-shine"></div>
       </button>
 
-      <!-- Notifications -->
-      <button *ngIf="isLoggedIn" class="notification-btn" (click)="toggleNotifications()" title="Notifications">
+      <!-- Enhanced Notifications -->
+      <button *ngIf="isLoggedIn" class="notification-btn enhanced" (click)="toggleNotifications()" title="Notifications">
+        <div class="notification-bg"></div>
+        <div class="notification-pulse" *ngIf="hasNotifications"></div>
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" />
         </svg>
-        <span class="badge" *ngIf="hasNotifications">{{ notificationCount }}</span>
+        <span class="badge enhanced" *ngIf="hasNotifications">{{ notificationCount }}</span>
       </button>
 
-      <!-- Login -->
-      <button *ngIf="!isLoggedIn" routerLink="dashboard/login" class="auth-btn login-btn">
+      <!-- Enhanced Login -->
+      <button *ngIf="!isLoggedIn" routerLink="dashboard/login" class="auth-btn login-btn enhanced">
         <div class="btn-content">
           <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
             <path d="M15 3H19..." stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -68,25 +85,34 @@
           </svg>
           <span class="btn-text">Login</span>
         </div>
+        <div class="btn-bg-animated"></div>
         <div class="btn-shine"></div>
         <div class="btn-ripple"></div>
       </button>
 
-      <!-- User Menu -->
-      <div *ngIf="isLoggedIn" class="user-menu">
+      <!-- Enhanced User Menu -->
+      <div *ngIf="isLoggedIn" class="user-menu enhanced">
         <button class="user-avatar user-btn" (click)="toggleUserMenu()" [class.menu-open]="isUserMenuOpen">
-          <div class="avatar">{{ userAvatar }}</div>
+          <div class="user-btn-bg"></div>
+          <div class="avatar">
+            <div class="avatar-glow"></div>
+            {{ userAvatar }}
+          </div>
           <span class="username">Welcome, {{ userName }}</span>
           <svg class="chevron" [class.rotate]="isUserMenuOpen" viewBox="0 0 24 24" fill="none">
             <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
 
-        <!-- Dropdown -->
-        <div class="user-dropdown" [class.open]="isUserMenuOpen">
+        <!-- Enhanced Dropdown -->
+        <div class="user-dropdown enhanced" [class.open]="isUserMenuOpen">
+          <div class="dropdown-bg"></div>
           <div class="dropdown-content">
             <div class="dropdown-header">
-              <div class="avatar-large">{{ userAvatar }}</div>
+              <div class="avatar-large">
+                <div class="avatar-glow-large"></div>
+                {{ userAvatar }}
+              </div>
               <div class="user-info">
                 <span class="user-name">{{ userName }}</span>
                 <span class="user-email">{{ userEmail }}</span>
@@ -95,21 +121,52 @@
 
             <div class="dropdown-divider"></div>
 
-            <button class="dropdown-item" (click)="goToProfile()">
-              <svg viewBox="0 0 24 24" fill="none"><path d="..." stroke="currentColor" stroke-width="2" /></svg>
+            <button class="dropdown-item enhanced" (click)="goToProfile()">
+              <div class="item-bg"></div>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path 
+    d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7h2a5 5 0 0 1 10 0h2c0-3.866-3.134-7-7-7z" 
+    fill="black" 
+    stroke="currentColor" 
+    stroke-width="2" />
+
+</svg>
+
+
               <span>Profile</span>
+              <div class="item-shine"></div>
             </button>
 
-            <button class="dropdown-item">
-              <svg viewBox="0 0 24 24" fill="none"><path d="..." stroke="currentColor" stroke-width="2" /></svg>
+            <button class="dropdown-item enhanced">
+              <div class="item-bg"></div>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path 
+    d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7h2a5 5 0 0 1 10 0h2c0-3.866-3.134-7-7-7z" 
+    fill="black" 
+    stroke="currentColor" 
+    stroke-width="2" />
+
+</svg>
+
               <span>Settings</span>
+              <div class="item-shine"></div>
             </button>
 
             <div class="dropdown-divider"></div>
 
-            <button class="dropdown-item logout-item" (click)="OnLogout()">
-              <svg viewBox="0 0 24 24" fill="none"><path d="..." stroke="currentColor" stroke-width="2" /></svg>
+            <button class="dropdown-item logout-item enhanced" (click)="OnLogout()">
+              <div class="item-bg logout"></div>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path 
+    d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.866 0-7 3.134-7 7h2a5 5 0 0 1 10 0h2c0-3.866-3.134-7-7-7z" 
+    fill="black" 
+    stroke="currentColor" 
+    stroke-width="2" />
+
+</svg>
+
               <span>Logout</span>
+              <div class="item-shine"></div>
             </button>
           </div>
         </div>
@@ -117,25 +174,31 @@
     </div>
   </div>
 
-  <!-- Mobile Overlay -->
-  <div class="mobile-overlay" [class.active]="isMobileNavOpen" (click)="toggleMobileNav()"></div>
+  <!-- Enhanced Mobile Overlay -->
+  <div class="mobile-overlay enhanced" [class.active]="isMobileNavOpen" (click)="toggleMobileNav()"></div>
 
-  <!-- Mobile Navigation -->
-  <div class="mobile-nav" [class.open]="isMobileNavOpen">
+  <!-- Enhanced Mobile Navigation -->
+  <div class="mobile-nav enhanced" [class.open]="isMobileNavOpen">
+    <div class="mobile-nav-bg"></div>
     <div class="mobile-nav-content">
       <div class="mobile-nav-header">
-        <div class="avatar">{{ userAvatar }}</div>
+        <div class="avatar">
+          <div class="avatar-glow"></div>
+          {{ userAvatar }}
+        </div>
         <div>
           <div class="user-name">{{ userName }}</div>
           <div class="user-email">{{ userEmail }}</div>
         </div>
       </div>
       <div class="mobile-nav-items">
-        <button *ngFor="let item of navItems" [routerLink]="item.route" class="mobile-nav-link" [ngClass]="{'primary': item.primary, 'logout': item.logout}">
+        <button *ngFor="let item of navItems" [routerLink]="item.route" class="mobile-nav-link enhanced" [ngClass]="{'primary': item.primary, 'logout': item.logout}">
+          <div class="mobile-link-bg"></div>
           <svg *ngIf="item.icon" viewBox="0 0 24 24" fill="none">
             <path [attr.d]="getIcon(item.icon)" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
           <span>{{ item.label }}</span>
+          <div class="mobile-link-shine"></div>
         </button>
       </div>
     </div>

@@ -194,10 +194,37 @@ namespace air_reservation.Repository.User_Repo
             return true;
         }
 
+        //public async Task<bool> ChangeUserPasswordAsync(int userId, ChangePasswordDTO changePasswordDto)
+        //{
+        //    var user = await _context.Users.FindAsync(userId);
+        //    if (user == null)
+        //        return false;
+
+        //    // Verify current password
+        //    if (!BCrypt.Net.BCrypt.Verify(changePasswordDto.CurrentPassword, user.Password))
+        //        throw new UnauthorizedAccessException("Current password is incorrect.");
+
+        //    // Check if new password and confirm password match
+        //    if (changePasswordDto.NewPassword != changePasswordDto.ConfirmPassword)
+        //        throw new ArgumentException("New password and confirm password do not match.");
+
+        //    // Update password
+        //    user.Password = BCrypt.Net.BCrypt.HashPassword(changePasswordDto.NewPassword);
+        //    await _context.SaveChangesAsync();
+
+        //    return true;
+        //}
+
         public async Task<bool> ChangeUserPasswordAsync(int userId, ChangePasswordDTO changePasswordDto)
         {
+            // ✅ Add null checks
+            if (string.IsNullOrEmpty(changePasswordDto?.CurrentPassword) ||
+                string.IsNullOrEmpty(changePasswordDto?.NewPassword) ||
+                string.IsNullOrEmpty(changePasswordDto?.ConfirmPassword))
+                throw new ArgumentException("All password fields are required.");
+
             var user = await _context.Users.FindAsync(userId);
-            if (user == null)
+            if (user == null || string.IsNullOrEmpty(user.Password))
                 return false;
 
             // Verify current password
