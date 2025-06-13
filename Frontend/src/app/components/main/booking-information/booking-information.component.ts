@@ -81,6 +81,7 @@ export class BookingInformationComponent implements OnInit, OnDestroy {
   countdownSeconds = 0
 
   ngOnInit(): void {
+     window.scrollTo(0, 0); // Scrolls to the top of the page
     const idParam = this.route.snapshot.paramMap.get("id")
     if (idParam) {
       this.bookingId = Number(idParam)

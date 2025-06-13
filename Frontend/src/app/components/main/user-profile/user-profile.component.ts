@@ -82,6 +82,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
+     window.scrollTo(0, 0); // Scrolls to the top of the page
     this.loadUserProfile();
 
     // Get user data from service

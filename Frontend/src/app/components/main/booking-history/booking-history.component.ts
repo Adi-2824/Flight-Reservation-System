@@ -23,6 +23,7 @@ export class BookingHistoryComponent implements OnInit {
   isLoading = true;
 
   ngOnInit() {
+     window.scrollTo(0, 0); // Scrolls to the top of the page
     this.checkExpiredReservations();
     this.fetchAllReservations();
 

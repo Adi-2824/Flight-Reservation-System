@@ -486,6 +486,7 @@ export class BookingConfirmationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+     window.scrollTo(0, 0); // Scrolls to the top of the page
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.FlightId = params["flightId"]
       if (this.FlightId) {

@@ -72,6 +72,7 @@ export class BookingComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+     window.scrollTo(0, 0); // Scrolls to the top of the page
     this.travellerList = []
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.flightNumber = params["flightNumber"]
