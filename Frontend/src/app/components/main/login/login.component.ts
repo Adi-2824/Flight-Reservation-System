@@ -4,6 +4,7 @@ import {  Router, RouterLink } from "@angular/router"
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms"
 import { CommonModule } from "@angular/common"
 import {RecaptchaModule} from 'ng-recaptcha'
+import Swal from "sweetalert2"
 
 
 
@@ -135,18 +136,29 @@ export class LoginComponent {
       console.log("🚀 Form Data Before Sending:", myFormData);
 
       this.authService.signIn(myFormData).subscribe({
-        next: (data: any) => {
-          console.log("✅ Login Success", data);
-          localStorage.setItem("token", data.token);
-          this.isLoading = false;
-          this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/");
-        },
-        error: (err: any) => {
-          console.error("❌ Login Failed", err);
-          this.isLoading = false;
-          this.errors["general"] = "Login failed. Please check your credentials.";
-        },
-      });
+  next: (data: any) => {
+    Swal.fire({
+      icon: "success",
+      title: "Login Successful",
+      text: `Welcome, ${data.role === "Admin" ? "Admin" : "User"}!`,
+      timer: 2000,
+      showConfirmButton: false,
+    });
+    localStorage.setItem("token", data.token);
+    this.isLoading = false;
+    this.router.navigateByUrl(data.role === "Admin" ? "/dashboard" : "/");
+  },
+  error: (err: any) => {
+    Swal.fire({
+      icon: "error",
+      title: "Login Failed",
+      text: "Please check your credentials.",
+    });
+    console.error("❌ Login Failed", err);
+    this.isLoading = false;
+    this.errors["general"] = "Login failed. Please check your credentials.";
+  },
+});
     });
   });
 } // ✅ Properly closed method here

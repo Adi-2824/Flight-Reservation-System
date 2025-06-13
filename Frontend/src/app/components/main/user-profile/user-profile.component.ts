@@ -10,6 +10,7 @@ import { AuthService } from '../../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
+import Swal from 'sweetalert2';
 
 interface UserProfile {
   id: string;
@@ -176,73 +177,85 @@ export class UserProfileComponent implements OnInit {
   }
 
   async updateProfile(): Promise<void> {
-    if (this.profileForm.invalid) {
-      this.markFormGroupTouched(this.profileForm);
-      return;
-    }
-
-    this.isLoading = true;
-    this.clearMessages();
-
-    try {
-      // updateUserProfile returns an Observable, so use toPromise() here
-      const updatedProfile = await this.userService
-        .updateUserProfile(this.profileForm.value)
-        .toPromise();
-
-      this.userProfile = updatedProfile;
-
-      // Update component variables with new data
-      if (updatedProfile && updatedProfile.user) {
-        this.firstName = updatedProfile.user.firstName;
-        this.lName = updatedProfile.user.lastName;
-        this.userEmail = updatedProfile.user.email;
-        this.userphoneNumber = updatedProfile.user.phoneNumber;
-      }
-
-      this.isEditing = false;
-      this.profileForm.disable();
-      this.successMessage = 'Profile updated successfully!';
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        this.successMessage = '';
-      }, 3000);
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Failed to update profile';
-    } finally {
-      this.isLoading = false;
-    }
+  if (this.profileForm.invalid) {
+    this.markFormGroupTouched(this.profileForm);
+    return;
   }
 
-  async changePassword(): Promise<void> {
-    if (this.passwordForm.invalid) {
-      this.markFormGroupTouched(this.passwordForm);
-      return;
+  this.isLoading = true;
+  this.clearMessages();
+
+  try {
+    // updateUserProfile returns an Observable, so use toPromise() here
+    const updatedProfile = await this.userService
+      .updateUserProfile(this.profileForm.value)
+      .toPromise();
+
+    this.userProfile = updatedProfile;
+
+    // Update component variables with new data
+    if (updatedProfile && updatedProfile.user) {
+      this.firstName = updatedProfile.user.firstName;
+      this.lName = updatedProfile.user.lastName;
+      this.userEmail = updatedProfile.user.email;
+      this.userphoneNumber = updatedProfile.user.phoneNumber;
     }
 
-    this.isLoading = true;
-    this.clearMessages();
+    this.isEditing = false;
+    this.profileForm.disable();
 
-    try {
-      // changePassword returns an Observable, so use toPromise() here
-      await this.userService
-        .changePassword(this.passwordForm.value)
-        .toPromise();
-
-      this.passwordForm.reset();
-      this.successMessage = 'Password changed successfully!';
-
-      // Clear success message after 3 seconds
-      setTimeout(() => {
-        this.successMessage = '';
-      }, 3000);
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Failed to change password';
-    } finally {
-      this.isLoading = false;
-    }
+    // Show success message using SweetAlert
+    Swal.fire({
+      icon: "success",
+      title: "Profile Updated",
+      text: "Your profile has been updated successfully!",
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  } catch (error: any) {
+    Swal.fire({
+      icon: "error",
+      title: "Update Failed",
+      text: error.message || "Failed to update profile.",
+    });
+  } finally {
+    this.isLoading = false;
   }
+}
+
+ async changePassword(): Promise<void> {
+  if (this.passwordForm.invalid) {
+    this.markFormGroupTouched(this.passwordForm);
+    return;
+  }
+
+  this.isLoading = true;
+  this.clearMessages();
+
+  try {
+    // changePassword returns an Observable, so use toPromise() here
+    await this.userService.changePassword(this.passwordForm.value).toPromise();
+
+    this.passwordForm.reset();
+
+    // Show success message using SweetAlert
+    Swal.fire({
+      icon: "success",
+      title: "Password Changed",
+      text: "Your password has been updated successfully!",
+      timer: 3000,
+      showConfirmButton: false,
+    });
+  } catch (error: any) {
+    Swal.fire({
+      icon: "error",
+      title: "Failed to Change Password",
+      text: error.message || "An error occurred while updating your password.",
+    });
+  } finally {
+    this.isLoading = false;
+  }
+}
 
   confirmDeleteAccount(): void {
     this.showDeleteConfirmation = true;
@@ -254,39 +267,47 @@ export class UserProfileComponent implements OnInit {
   }
 
   async deleteAccount(): Promise<void> {
-    this.isLoading = true;
-    this.clearMessages();
+  this.isLoading = true;
+  this.clearMessages();
 
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const tokenData: any = jwtDecode(token);
-      const userId: any =
-        tokenData[
-          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
-        ];
-
-      // deleteAccount returns an Observable, so use toPromise() here
-      await this.userService.deleteAccount(userId).toPromise();
-
-      // Sign out and redirect after successful deletion
-      this.userService.signOut();
-      this.router.navigate(['dashboard/login']);
-
-      // Show success message
-      alert(
-        'Account deleted successfully. You will be redirected to the login page.'
-      );
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Failed to delete account';
-      this.showDeleteConfirmation = false;
-    } finally {
-      this.isLoading = false;
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("No authentication token found");
     }
+
+    const tokenData: any = jwtDecode(token);
+    const userId: any =
+      tokenData[
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
+      ];
+
+    // deleteAccount returns an Observable, so use toPromise() here
+    await this.userService.deleteAccount(userId).toPromise();
+
+    // Sign out and redirect after successful deletion
+    this.userService.signOut();
+    this.router.navigate(["dashboard/login"]);
+
+    // Show success message using SweetAlert
+    Swal.fire({
+      icon: "success",
+      title: "Account Deleted",
+      text: "You will be redirected to the login page.",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  } catch (error: any) {
+    Swal.fire({
+      icon: "error",
+      title: "Deletion Failed",
+      text: error.message || "Failed to delete account.",
+    });
+    this.showDeleteConfirmation = false;
+  } finally {
+    this.isLoading = false;
   }
+}
 
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
