@@ -21,10 +21,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<ReservationCleanupService>();
 
 string? con = builder.Configuration.GetConnectionString("AppConnection");
-var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
+//var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 
 builder.Services.AddDbContext<ApplicationDbContext>(Options => {
-    Options.UseMySql(con,serverVersion);
+    Options.UseSqlServer(con);
 });
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

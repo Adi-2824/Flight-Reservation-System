@@ -4,6 +4,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { FlightsService } from '../../../services/flights.service';
+import Swal from 'sweetalert2';
 
 export interface Flight {
   id: number;
@@ -109,9 +110,15 @@ export class SearchComponent implements OnInit { // Fixed class name
   }
 
   BookFlight(flightId: number): void {
-    console.log(`Booking flight ${flightId} in ${this.selectedClass} class`);
-    alert(`Booking flight ${flightId} in ${this.selectedClass} class`);
-  }
+  console.log(`Booking flight ${flightId} in ${this.selectedClass} class`);
+  
+  Swal.fire({
+    title: "Flight Booking",
+    text: `Booking flight ${flightId} in ${this.selectedClass} class`,
+    icon: "success",
+    confirmButtonText: "OK"
+  });
+}
 
   getCurrentPrice(flight: Flight): number {
     return this.selectedClass === 'Economy' ? flight.economyPrice : flight.businessPrice;

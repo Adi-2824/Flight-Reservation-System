@@ -259,7 +259,7 @@ export class UserProfileComponent implements OnInit {
 
   confirmDeleteAccount(): void {
     this.showDeleteConfirmation = true;
-    this.clearMessages();
+    this.deleteAccount()
   }
 
   cancelDelete(): void {
@@ -301,7 +301,7 @@ export class UserProfileComponent implements OnInit {
     Swal.fire({
       icon: "error",
       title: "Deletion Failed",
-      text: error.message || "Failed to delete account.",
+      text:  "Cann't delete account with confirmed and pending reservations .",
     });
     this.showDeleteConfirmation = false;
   } finally {

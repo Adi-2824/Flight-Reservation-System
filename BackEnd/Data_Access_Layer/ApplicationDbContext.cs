@@ -12,6 +12,7 @@ namespace air_reservation.Data_Access_Layer
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+
         }
 
         public DbSet<User> Users { get; set; }
@@ -82,7 +83,7 @@ namespace air_reservation.Data_Access_Layer
                 entity.HasOne(e => e.User)
                     .WithMany(u => u.Reservations)
                     .HasForeignKey(e => e.UserId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(e => e.Flight)
                     .WithMany(f => f.Reservations)
