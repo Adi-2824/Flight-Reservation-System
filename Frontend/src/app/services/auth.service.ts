@@ -168,12 +168,18 @@ export class AuthService {
    * @returns any
    */
   getUserData(): any {
-    if (!this.userData || Object.keys(this.userData).length === 0) {
-      this.userData = this.getUserDataFromStorage();
-    }
-    console.log('Retrieved User Data:', this.userData);
-    return this.userData;
+  if (!this.userData || Object.keys(this.userData).length === 0) {
+    this.userData = this.getUserDataFromStorage();
   }
+
+  // Normalize structure if needed
+  if (this.userData && !this.userData.user) {
+    this.userData = { user: this.userData };
+  }
+
+  return this.userData;
+}
+
 
   /**
    * Get user name
