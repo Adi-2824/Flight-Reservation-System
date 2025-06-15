@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component ,inject} from '@angular/core';
+import { Component} from '@angular/core';
 import { FormControl,FormGroup } from '@angular/forms';
 import { FlightsService } from '../../../services/flights.service';
 import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
-import { SignalrService } from '../../../services/signalr.service';
-import { ToastrService } from 'ngx-toastr';
+// import Swal from 'sweetalert2';
+// import { SignalrService } from '../../../services/signalr.service';
+// import { provideToastr, ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-schedule',
+  standalone:true,
   imports: [CommonModule],
   templateUrl: './schedule.component.html',
   styleUrl: './schedule.component.css'
@@ -32,7 +33,7 @@ export class ScheduleComponent {
   return this.statusMapping[status] || "Unknown"; // Default for unexpected values
 }
 
-  constructor(private flightService:FlightsService, private router:Router, private signalRService: SignalrService, private toastr: ToastrService  ){
+  constructor(private flightService:FlightsService, private router:Router ){
     this.scheduleForm= new FormGroup({
       id: new FormControl(''),
       airline: new FormControl(''),

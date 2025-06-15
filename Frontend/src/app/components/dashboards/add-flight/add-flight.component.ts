@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-add-flight',
   imports: [ReactiveFormsModule,CommonModule],
+  standalone:true,
   templateUrl: './add-flight.component.html',
   styleUrl: './add-flight.component.css'
 })

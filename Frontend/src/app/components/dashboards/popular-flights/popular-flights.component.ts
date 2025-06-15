@@ -1,17 +1,14 @@
 
 
 import { Component, OnInit } from '@angular/core';
-
-
 import { AnalyticsService, PopularFlight } from '../../../services/analytics.service';
 import { CommonModule } from '@angular/common';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
  
 @Component({
-
   selector: 'app-popular-flights',
   imports:[CommonModule,NgxChartsModule],
-
+  standalone:true,
   templateUrl: './popular-flights.component.html',
 
   styleUrls: ['./popular-flights.component.css']

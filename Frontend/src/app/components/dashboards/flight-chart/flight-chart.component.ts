@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-flight-chart',
-  imports: [],
+  standalone:true,
   templateUrl: './flight-chart.component.html',
   styleUrl: './flight-chart.component.css'
 })
