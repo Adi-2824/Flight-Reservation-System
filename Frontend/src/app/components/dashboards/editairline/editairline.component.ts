@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-editairline',
+  standalone:true,
   imports: [ReactiveFormsModule,CommonModule],
   templateUrl: './editairline.component.html',
   styleUrl: './editairline.component.css'

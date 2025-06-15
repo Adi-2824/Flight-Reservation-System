@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@angular/animations": "^20.0.3",
+    "@microsoft/signalr": "^8.0.7",
     "bootstrap-icons": "^1.13.1",
-    "ng-recaptcha": "^13.2.1"
+    "ng-recaptcha": "^13.2.1",
+    "ngx-toastr": "^19.0.0"
   }
 }

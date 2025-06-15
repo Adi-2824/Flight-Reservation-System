@@ -12,6 +12,7 @@ interface Flight {
 
 @Component({
   selector: 'app-recommendation',
+  standalone:true,
   imports: [CommonModule],
   templateUrl: './recommendation.component.html',
   styleUrl: './recommendation.component.css'

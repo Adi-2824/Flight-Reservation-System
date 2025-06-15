@@ -66,8 +66,8 @@ import { AnalyticsService } from '../../../services/analytics.service';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
  
 @Component({
-
   selector: 'app-admin-analytics',
+  standalone:true,
   imports:[NgxChartsModule],
 
   templateUrl: './admin-analytics.component.html',

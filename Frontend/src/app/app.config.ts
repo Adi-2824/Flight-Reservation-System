@@ -1,6 +1,6 @@
 import { ApplicationConfig, importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
+import { DOCUMENT } from '@angular/common';
 import { routes } from './app.routes';
 import {provideHttpClient } from '@angular/common/http';
 import { FlightStatusPipe } from './flight-status.pipe';
